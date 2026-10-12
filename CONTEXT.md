@@ -64,7 +64,7 @@ Futbolero sin exagerar: "Banquillo vacío", "Fuera de juego" (404), "¡Golazo!" 
 | Datos/caché | **TanStack Query 5** (caché, reintentos, invalidación) |
 | Backend | **Supabase**: Postgres + Auth + Storage + RLS |
 | Iconos | lucide-react |
-| Deploy sugerido | Netlify (`netlify.toml` listo) o Vercel |
+| Deploy | **Vercel** (`vercel.json` + funciones en `api/`) |
 
 ### Supabase
 | Dato | Valor |
@@ -131,7 +131,11 @@ supabase/
 
 ### Funciones
 - `is_admin()`: ¿el usuario actual está en `admins`? Se usa en las políticas.
-- `create_order(p_customer jsonb, p_items jsonb)`: valida datos, verifica que el producto esté activo y la talla exista, **calcula el precio desde la BD**, genera el código y guarda el pedido. Única forma en que un visitante puede escribir en `orders`.
+- `create_order(p_customer jsonb, p_items jsonb)`: valida datos, verifica que el producto esté activo y la talla exista, **calcula el precio desde la BD**, genera el código y guarda el pedido. Única forma en que un visitante puede escribir en `orders`. Desde la migración 0002 además:
+  - exige `accept_privacy = true` (autorización Ley 1581) y guarda `orders.privacy_accepted_at`;
+  - rechaza si el campo trampa `website` viene lleno (bots);
+  - **anti-spam**: máximo 5 pedidos por celular por hora y 60 en total por hora.
+- `grant_admin_on_signup()` (trigger en `auth.users`): si el correo que se registra está en `admin_emails`, lo vuelve admin automáticamente. Admin configurado: **elbanquillodepablo@gmail.com**.
 
 ### Reglas de seguridad (RLS)
 | Recurso | Público (anon) | Admin |
@@ -143,7 +147,10 @@ supabase/
 
 > El asesor de seguridad de Supabase muestra 2 avisos "SECURITY DEFINER ejecutable por anon" en `create_order` e `is_admin`. **Es intencional**: la primera es el endpoint público de pedidos (con validación interna) y la segunda solo responde por el propio usuario.
 
-**Verificado (2026-10-12):** anon ve los 3 productos; anon recibe `[]` en pedidos; anon **no** puede crear productos (error RLS 42501); un pedido con `unit_price: 1` se cobró a precio real ($379.800 por 2 unidades).
+`admin_emails` tiene RLS sin políticas a propósito: nadie la lee ni la escribe desde la API.
+
+**Verificado (2026-10-12):** sin consentimiento → rechazado; honeypot lleno → rechazado; el 6.º pedido del mismo celular en una hora → bloqueado.
+**Verificado antes:** anon ve los 3 productos; anon recibe `[]` en pedidos; anon **no** puede crear productos (error RLS 42501); un pedido con `unit_price: 1` se cobró a precio real ($379.800 por 2 unidades).
 
 ---
 
@@ -175,7 +182,10 @@ En la tienda (`ProductImage.tsx`): `srcset` (640w/1600w) + `sizes`, `loading="la
 | `/tienda` | Catálogo con búsqueda y filtros: `?q=`, `?categoria=`, `?tipo=local`, `?publico=nino`, `?version=jugador`, `?orden=precio-asc` |
 | `/producto/:slug` | Detalle: galería, tallas, personalización nombre/número, carrito, favorito, consulta por WhatsApp, "Más de [equipo]" |
 | `/favoritos` | Favoritos (guardados en el navegador) |
-| `/checkout` | Datos de envío → guarda el pedido → abre WhatsApp |
+| `/checkout` | Datos de envío + autorización de datos → guarda el pedido → abre WhatsApp |
+| `/terminos` | Cómo comprar seguro, envíos, cambios, garantía, retracto (Ley 1480) |
+| `/privacidad` | Política de tratamiento de datos (Ley 1581 / Decreto 1377) |
+| `/sitemap.xml`, `/robots.txt` | Generados por funciones de Vercel (`api/`) |
 
 ### Admin
 | Ruta | Página |
@@ -193,17 +203,19 @@ En la tienda (`ProductImage.tsx`): `srcset` (640w/1600w) + `sizes`, `loading="la
 
 ## 8. Manual del administrador 📋
 
+### Cuenta admin
+- Correo admin: **elbanquillodepablo@gmail.com** (está en `admin_emails`; al crearse queda como admin solo).
+- Entrada: **`https://TU-DOMINIO/admin/login`**.
+- WhatsApp oficial configurado: **+57 320 571 6302** (`573205716302`).
+
 ### Primer acceso (una sola vez)
-1. Supabase → **Authentication → Users → Add user → Create new user**: tu correo + contraseña (marca *Auto Confirm User*).
-2. Dale permisos de admin. En **SQL Editor** ejecuta:
-   ```sql
-   insert into public.admins (user_id)
-   select id from auth.users where email = 'TU_CORREO@ejemplo.com';
-   ```
-   (o pídeselo a Claude con el correo).
-3. Recomendado: **Authentication → Providers → Email → desactivar "Allow new users to sign up"**. Así nadie más puede crear cuentas.
-4. Entra a `/admin/login`.
-5. Ve a **Ajustes** y pon el **número de WhatsApp real** (ej. `573001234567`). ⚠️ Hoy está el de ejemplo `573000000000`.
+1. Supabase → **Authentication → Users → Add user → Create new user** → correo `elbanquillodepablo@gmail.com`, una contraseña **fuerte** (12+ caracteres, con símbolos) y marca **Auto Confirm User**.
+2. Listo: el trigger la vuelve admin automáticamente.
+3. **Authentication → Sign In / Providers → Email → desactiva "Allow new users to sign up"** para que nadie más pueda crear cuentas.
+4. **Authentication → URL Configuration** → *Site URL* = la URL de Vercel.
+5. Entra a `/admin/login`.
+
+Para agregar otro admin: `insert into public.admin_emails (email) values ('otro@correo.com');` y después creas el usuario.
 
 ### Crear "Real Madrid local, visitante y tercera" (lo más rápido)
 1. **Crear equipaciones** → escribe `Real Madrid`, liga `LaLiga`, temporada `2026/27`, categoría `Clubes`.
@@ -231,11 +243,28 @@ npm run typecheck
 npm run build                # genera dist/
 ```
 
-### Deploy en Netlify
-1. *Add new site → Import from GitHub* → este repo.
-2. Build `npm run build`, publish `dist` (ya en `netlify.toml`).
-3. *Environment variables*: `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`.
-4. En Supabase → **Authentication → URL Configuration**: agrega la URL del sitio en *Site URL / Redirect URLs*.
+### Deploy en Vercel
+1. vercel.com → **Add New → Project → Import** `elbanquillodepablo-dev/elbanquillodepablo1`.
+2. Framework: **Vite** (lo detecta solo; `vercel.json` ya trae build, rutas y cabeceras).
+3. **Environment Variables** (Production + Preview):
+   | Variable | Valor |
+   |---|---|
+   | `VITE_SUPABASE_URL` | `https://uymvinfxlwqzzwyditsv.supabase.co` |
+   | `VITE_SUPABASE_PUBLISHABLE_KEY` | la *publishable key* (`sb_publishable_…`) |
+   | `VITE_SITE_URL` | la URL final, ej. `https://elbanquillodepablo.vercel.app` o tu dominio |
+4. **Deploy**. Luego en Supabase → *Authentication → URL Configuration* pon esa URL como *Site URL*.
+5. **Google Search Console**: agrega la propiedad (URL), verifica y envía `https://TU-DOMINIO/sitemap.xml`.
+6. Si cambias de dominio: actualiza `VITE_SITE_URL` y vuelve a desplegar.
+
+### Qué hace `vercel.json` / `api/`
+- SPA: cualquier ruta sirve `index.html`.
+- `/producto/:slug` → `api/product-meta.ts`: devuelve el HTML con título, descripción, foto, precio y JSON-LD del producto, para que **WhatsApp, Facebook y Google** muestren la vista previa correcta sin ejecutar JS.
+- `/sitemap.xml` y `/robots.txt` dinámicos (`api/sitemap.ts`, `api/robots.ts`).
+- Cabeceras de seguridad: HSTS, CSP estricta (solo este sitio, Google Fonts y el proyecto Supabase), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` y `Permissions-Policy`. ⚠️ Si cambias de proyecto Supabase, actualiza el dominio en la CSP.
+- Caché de 1 año para `/assets/*`.
+
+### Imágenes de marca
+`npm run images` regenera `og.png`, `apple-touch-icon.png` e `icon-512.png` desde los SVG (usa `sharp`).
 
 ### Repositorio
 `https://github.com/elbanquillodepablo-dev/elbanquillodepablo1` (rama `main`).
@@ -254,20 +283,26 @@ npm run build                # genera dist/
 - [x] Branding: logo, favicon, OG, paleta, tipografía
 - [x] Build de producción OK; seguridad RLS verificada
 - [x] Rediseño oscuro premium + logo escudo (skills ui-ux-pro-max y design-taste-frontend), basado en la referencia
+- [x] WhatsApp oficial +57 320 571 6302 y admin automático para elbanquillodepablo@gmail.com
+- [x] SEO: meta y canonical por página, Open Graph/Twitter, JSON-LD (Store, WebSite+SearchAction, Product, BreadcrumbList), sitemap y robots dinámicos, vistas previas de producto renderizadas en el servidor, og.png, manifest
+- [x] Seguridad: cabeceras (CSP/HSTS…), consentimiento Ley 1581, honeypot, límite de pedidos, páginas de términos y privacidad, avisos anti-fraude
+- [x] Configuración de Vercel (`vercel.json` + `api/`)
 
 ### ⏳ Pendiente (dueño de la tienda)
-- [ ] Crear usuario admin en Supabase y darle permisos (ver §8)
+- [ ] Crear el usuario `elbanquillodepablo@gmail.com` en Supabase con contraseña fuerte (§8)
 - [ ] Desactivar registros públicos en Supabase Auth
-- [ ] Poner el WhatsApp real en Ajustes
-- [ ] Subir fotos reales de las camisetas de Real Madrid
-- [ ] Deploy en Netlify + variables de entorno
+- [ ] Deploy en Vercel + variables de entorno (§9)
+- [ ] Site URL en Supabase Auth + Google Search Console con el sitemap
+- [ ] Subir fotos reales de las camisetas
+- [ ] (Recomendado) Completar en `/privacidad` el NIT o cédula del responsable si se formaliza el negocio
+- [ ] (Recomendado) Dominio propio, ej. `elbanquillodepablo.com`, y Google Business Profile
 
 ### 💡 Ideas próximas
 - [ ] Cupones de descuento (tabla `coupons` + validación en `create_order`)
 - [ ] Inventario por talla (stock)
 - [ ] Reseñas de clientes
 - [ ] Página "Guía de tallas"
-- [ ] SEO: sitemap, JSON-LD de productos, prerender
+- [ ] SEO: blog / guías ("cómo saber mi talla", "diferencia fan vs jugador") para tráfico orgánico
 - [ ] Notificación al admin por pedido nuevo (Edge Function → email/Telegram)
 - [ ] Costo de personalización configurable
 - [ ] Tests (Vitest + Testing Library) y CI en GitHub Actions
@@ -277,7 +312,9 @@ npm run build                # genera dist/
 ## 11. Bitácora de decisiones
 | Fecha | Decisión | Por qué |
 |---|---|---|
-| 2026-10-12 | Vite + React SPA (no Next.js) | Simple de desplegar en Netlify, igual que la referencia; no requiere servidor |
+| 2026-10-12 | Vite + React SPA (no Next.js) | Simple de desplegar; no requiere servidor |
+| 2026-10-12 | Deploy en **Vercel** con funciones edge para meta de producto, sitemap y robots | SEO y vistas previas en WhatsApp sin migrar a SSR completo |
+| 2026-10-12 | Admin por lista `admin_emails` + trigger | Claude no crea cuentas ni maneja contraseñas; el dueño crea el usuario y queda admin solo |
 | 2026-10-12 | Pedido = guardar en BD **y** abrir WhatsApp | Queda registro para el admin y la venta se cierra por chat, que es lo habitual en Colombia |
 | 2026-10-12 | Optimizar imágenes en el navegador | Gratis (las transformaciones de Supabase son de pago), ahorra almacenamiento y ancho de banda |
 | 2026-10-12 | Precio en COP como entero | Sin decimales en pesos; evita errores de redondeo |
@@ -290,4 +327,4 @@ npm run build                # genera dist/
 - Navegador integrado de Claude para revisar el diseño en escritorio y móvil.
 - Para continuar con IA: abre el repo, pide *"lee CONTEXT.md"* y sigue con la sección 10.
 
-> ⚠️ **Nota de red (2026-10-12):** desde la red de la oficina, las conexiones HTTPS a `*.supabase.co` se interceptan con un certificado no confiable y a veces redirigen a `147.45.69.3`. Afecta al navegador y a Node. **No** se debe desactivar la verificación TLS para saltarlo. Prueba con otra red (datos del celular) y consúltalo con TI. Los clientes en producción no se ven afectados.
+> ⚠️ **Nota de red (2026-10-12):** desde la red de la oficina, las conexiones HTTPS a `*.supabase.co` se interceptan con un certificado no confiable y a veces redirigen a `147.45.69.3`. Afecta al navegador y a Node. **No** se debe desactivar la verificación TLS para saltarlo. Prueba con otra red (datos del celular) y consúltalo con TI. Los clientes en producción (Vercel) no se ven afectados.

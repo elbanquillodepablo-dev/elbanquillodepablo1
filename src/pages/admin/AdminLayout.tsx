@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Logo } from '@/components/brand/Logo';
 import { Spinner } from '@/components/ui/EmptyState';
 import { cn } from '@/lib/format';
+import { useSeo } from '@/lib/seo';
 
 const NAV = [
   { to: '/admin', label: 'Resumen', icon: LayoutDashboard, end: true },
@@ -19,6 +20,7 @@ const NAV = [
 export function RequireAdmin() {
   const { session, isAdmin, loading, signOut } = useAuth();
   const location = useLocation();
+  useSeo({ title: 'Administración', noindex: true });
 
   if (loading) return <Spinner label="Verificando acceso…" />;
   if (!session) return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;

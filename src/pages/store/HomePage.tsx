@@ -9,6 +9,7 @@ import { KIT_LABELS, VERSION_LABELS } from '@/lib/constants';
 import { cn, formatPrice } from '@/lib/format';
 import { whatsappLink } from '@/lib/whatsapp';
 import type { Product } from '@/types';
+import { storeJsonLd, useSeo } from '@/lib/seo';
 
 export default function HomePage() {
   const { data: settings } = useSettings();
@@ -19,6 +20,8 @@ export default function HomePage() {
   const spotlight = featured.data?.[0] ?? products[0];
   const collage = [spotlight, ...products.filter((p) => p.id !== spotlight?.id)].filter(Boolean).slice(0, 3) as Product[];
   const teams = Array.from(new Set(products.map((p) => p.team)));
+
+  useSeo({ path: '/', jsonLd: storeJsonLd(settings?.whatsapp_number) });
 
   return (
     <>

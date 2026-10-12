@@ -12,6 +12,49 @@ import { AUDIENCE_LABELS, KIT_LABELS, VERSION_LABELS } from '@/lib/constants';
 import { cn, discountPercent, formatPrice } from '@/lib/format';
 import { publicImageUrl } from '@/lib/supabase';
 import { productInquiryMessage, whatsappLink } from '@/lib/whatsapp';
+import { absoluteUrl, SITE_NAME, useSeo } from '@/lib/seo';
+import type { Product } from '@/types';
+
+/** schema.org Product + BreadcrumbList para resultados enriquecidos en Google */
+function productJsonLd(p: Product) {
+  const url = absoluteUrl(`/producto/${p.slug}`);
+  const images = p.images.map((i) => publicImageUrl(i.path)).filter(Boolean);
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: p.name,
+      description: p.description ?? `${p.name} – ${KIT_LABELS[p.kit_type]} ${p.season ?? ''}`.trim(),
+      sku: p.slug,
+      ...(images.length ? { image: images } : {}),
+      brand: { '@type': 'Brand', name: p.team },
+      category: 'Camisetas de fútbol',
+      size: p.sizes,
+      offers: {
+        '@type': 'Offer',
+        url,
+        price: p.price,
+        priceCurrency: 'COP',
+        availability: 'https://schema.org/InStock',
+        itemCondition: 'https://schema.org/NewCondition',
+        seller: { '@type': 'Organization', name: SITE_NAME },
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'CO' },
+        },
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Inicio', item: absoluteUrl('/') },
+        { '@type': 'ListItem', position: 2, name: 'Tienda', item: absoluteUrl('/tienda') },
+        { '@type': 'ListItem', position: 3, name: p.name, item: url },
+      ],
+    },
+  ];
+}
 
 export default function ProductPage() {
   const { slug = '' } = useParams();
@@ -37,10 +80,17 @@ export default function ProductPage() {
     setCustomNumber('');
   }, [slug]);
 
-  useEffect(() => {
-    if (product) document.title = `${product.name} · El Banquillo de Pablo`;
-    return () => { document.title = 'El Banquillo de Pablo · Camisetas de fútbol'; };
-  }, [product]);
+  useSeo({
+    title: product?.name ?? 'Camiseta de fútbol',
+    description: product
+      ? `${product.name} – ${KIT_LABELS[product.kit_type]}, ${VERSION_LABELS[product.version].toLowerCase()}. ${formatPrice(product.price)}. Tallas ${product.sizes.join(', ')}. Envíos a toda Colombia, pedido por WhatsApp.`
+      : undefined,
+    path: `/producto/${slug}`,
+    image: publicImageUrl(product?.images[0]?.path),
+    type: 'product',
+    noindex: !isLoading && !product,
+    jsonLd: product ? productJsonLd(product) : undefined,
+  });
 
   if (isLoading) return <Spinner />;
   if (!product) {

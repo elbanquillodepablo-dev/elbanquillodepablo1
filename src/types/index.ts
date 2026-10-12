@@ -93,6 +93,10 @@ export interface CustomerInput {
   neighborhood: string;
   reference: string;
   notes: string;
+  /** Autorización de tratamiento de datos (Ley 1581 de 2012) */
+  accept_privacy: boolean;
+  /** Honeypot anti-bots: debe ir vacío */
+  website: string;
 }
 
 export interface StoreSettings {

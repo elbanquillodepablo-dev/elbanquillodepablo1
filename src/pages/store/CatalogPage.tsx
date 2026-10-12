@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { AUDIENCE_LABELS, KIT_LABELS, SORT_OPTIONS, VERSION_LABELS, type SortOption } from '@/lib/constants';
 import { cn } from '@/lib/format';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useSeo } from '@/lib/seo';
 
 /** Los filtros viven en la URL: se pueden compartir y el botón "atrás" funciona. */
 export default function CatalogPage() {
@@ -54,6 +55,15 @@ export default function CatalogPage() {
 
   const activeCount = ['categoria', 'tipo', 'publico', 'version'].filter((k) => params.get(k)).length;
   const categoryName = categories.find((c) => c.slug === filters.category)?.name;
+  const kitName = filters.kit ? KIT_LABELS[filters.kit as keyof typeof KIT_LABELS] : '';
+
+  // canonical solo con la categoría: búsquedas y orden no generan páginas duplicadas
+  useSeo({
+    title: categoryName ? `Camisetas ${categoryName}` : kitName ? `Camisetas ${kitName.toLowerCase()}` : 'Tienda de camisetas de fútbol',
+    description: `${categoryName ? `Camisetas de ${categoryName.toLowerCase()}` : 'Todas las camisetas de fútbol'}: local, visitante y tercera, versión fan y jugador, adulto y niño. Envíos a toda Colombia.`,
+    path: filters.category ? `/tienda?categoria=${filters.category}` : '/tienda',
+    noindex: !!(filters.search || filters.audience || filters.version),
+  });
 
   return (
     <div className="container-page py-10">

@@ -4,10 +4,12 @@ import { useFavorites } from '@/context/FavoritesContext';
 import { useProductsByIds } from '@/hooks/queries';
 import { ProductGrid, ProductGridSkeleton } from '@/components/product/ProductCard';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { useSeo } from '@/lib/seo';
 
 export default function FavoritesPage() {
   const { ids } = useFavorites();
   const { data = [], isLoading } = useProductsByIds(ids);
+  useSeo({ title: 'Mis favoritos', path: '/favoritos', noindex: true });
 
   return (
     <div className="container-page py-10">

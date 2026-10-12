@@ -10,6 +10,8 @@ const ProductPage = lazy(() => import('@/pages/store/ProductPage'));
 const FavoritesPage = lazy(() => import('@/pages/store/FavoritesPage'));
 const CheckoutPage = lazy(() => import('@/pages/store/CheckoutPage'));
 const NotFoundPage = lazy(() => import('@/pages/store/NotFoundPage'));
+const PrivacyPage = lazy(() => import('@/pages/store/PrivacyPage'));
+const TermsPage = lazy(() => import('@/pages/store/TermsPage'));
 
 const RequireAdmin = lazy(() => import('@/pages/admin/AdminLayout').then((m) => ({ default: m.RequireAdmin })));
 const LoginPage = lazy(() => import('@/pages/admin/LoginPage'));
@@ -32,6 +34,8 @@ const router = createBrowserRouter([
       { path: '/producto/:slug', element: s(<ProductPage />) },
       { path: '/favoritos', element: s(<FavoritesPage />) },
       { path: '/checkout', element: s(<CheckoutPage />) },
+      { path: '/privacidad', element: s(<PrivacyPage />) },
+      { path: '/terminos', element: s(<TermsPage />) },
       { path: '*', element: s(<NotFoundPage />) },
     ],
   },

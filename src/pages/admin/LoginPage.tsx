@@ -3,6 +3,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Logo } from '@/components/brand/Logo';
+import { useSeo } from '@/lib/seo';
 
 export default function LoginPage() {
   const { session, isAdmin, signIn } = useAuth();
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  useSeo({ title: 'Acceso administración', noindex: true });
 
   if (session && isAdmin) return <Navigate to={from} replace />;
 

@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
+import { useSeo } from '@/lib/seo';
 
 export default function NotFoundPage() {
+  useSeo({ title: 'Página no encontrada', noindex: true });
   return (
     <div className="container-page grid min-h-[60vh] place-items-center py-20 text-center">
       <div className="space-y-4">

@@ -43,7 +43,11 @@ export function Footer() {
       <div className="border-t border-line">
         <div className="container-page flex flex-col gap-2 py-6 text-xs text-mute sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} El Banquillo de Pablo · Precios en pesos colombianos</p>
-          <p className="max-w-xl">{s?.shipping_note}</p>
+          <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Legal">
+            <Link to="/terminos" className="hover:text-fg">Términos y compra segura</Link>
+            <Link to="/privacidad" className="hover:text-fg">Tratamiento de datos</Link>
+            <a href="https://www.sic.gov.co" target="_blank" rel="noreferrer" className="hover:text-fg">SIC</a>
+          </nav>
         </div>
       </div>
     </footer>

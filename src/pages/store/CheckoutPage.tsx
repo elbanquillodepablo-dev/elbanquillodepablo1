@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, MessageCircle, ShoppingBag } from 'lucide-react';
+import { CheckCircle2, Lock, MessageCircle, ShieldCheck, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useSettings } from '@/hooks/queries';
 import { createOrder } from '@/services/catalog';
@@ -10,10 +10,12 @@ import { CO_DEPARTMENTS } from '@/lib/constants';
 import { formatPrice } from '@/lib/format';
 import { orderMessage, whatsappLink } from '@/lib/whatsapp';
 import type { CustomerInput } from '@/types';
+import { useSeo } from '@/lib/seo';
 
 const EMPTY: CustomerInput = {
   customer_name: '', document_id: '', phone: '', department: '', city: '',
   address: '', neighborhood: '', reference: '', notes: '',
+  accept_privacy: false, website: '',
 };
 
 export default function CheckoutPage() {
@@ -23,6 +25,7 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState<{ code: string; link: string } | null>(null);
+  useSeo({ title: 'Finalizar pedido', path: '/checkout', noindex: true });
 
   const set = (key: keyof CustomerInput) => (e: { target: { value: string } }) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -32,6 +35,10 @@ export default function CheckoutPage() {
     setError('');
     if (!/^\+?\d[\d\s-]{6,}$/.test(form.phone)) {
       setError('Revisa el número de celular.');
+      return;
+    }
+    if (!form.accept_privacy) {
+      setError('Para enviar el pedido debes autorizar el tratamiento de tus datos.');
       return;
     }
     setSubmitting(true);
@@ -80,7 +87,7 @@ export default function CheckoutPage() {
     <div className="container-page py-10">
       <h1 className="mb-8 text-5xl font-extrabold tracking-tight leading-none">Finalizar pedido</h1>
       <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
-        <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2" noValidate={false}>
+        <form onSubmit={onSubmit} className="relative grid gap-4 sm:grid-cols-2">
           <h2 className="text-2xl font-bold tracking-tight sm:col-span-2">Datos de envío</h2>
           <label className="field sm:col-span-2">Nombre completo *
             <input className="input" required autoComplete="name" value={form.customer_name} onChange={set('customer_name')} />
@@ -112,13 +119,27 @@ export default function CheckoutPage() {
           <label className="field sm:col-span-2">Notas
             <textarea className="input" rows={3} value={form.notes} onChange={set('notes')} />
           </label>
+          {/* Honeypot: invisible para personas, los bots lo llenan */}
+          <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+            <label>Sitio web<input tabIndex={-1} autoComplete="off" value={form.website} onChange={set('website')} /></label>
+          </div>
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-surface p-4 text-sm leading-relaxed text-fg/85 ring-1 ring-line sm:col-span-2">
+            <input type="checkbox" required className="mt-0.5 size-5 shrink-0 accent-volt" checked={form.accept_privacy}
+              onChange={(e) => setForm((f) => ({ ...f, accept_privacy: e.target.checked }))} />
+            <span>
+              Autorizo a El Banquillo de Pablo a usar mis datos solo para gestionar y entregar este pedido, según la{' '}
+              <Link to="/privacidad" target="_blank" className="font-semibold text-volt underline underline-offset-2">política de tratamiento de datos</Link>{' '}
+              (Ley 1581 de 2012). Acepto los <Link to="/terminos" target="_blank" className="font-semibold text-volt underline underline-offset-2">términos y condiciones</Link>.
+            </span>
+          </label>
           {error && <p role="alert" className="rounded-xl bg-card/10 p-3 text-sm font-semibold text-card sm:col-span-2">{error}</p>}
           <button type="submit" disabled={submitting} className="btn-volt h-14 text-base sm:col-span-2">
             <MessageCircle className="size-5" /> {submitting ? 'Enviando…' : 'Confirmar pedido por WhatsApp'}
           </button>
-          <p className="text-xs text-mute sm:col-span-2">
-            No cobramos nada en línea: confirmamos disponibilidad, valor del envío y medio de pago por WhatsApp.
-          </p>
+          <ul className="space-y-2 text-xs leading-relaxed text-mute sm:col-span-2">
+            <li className="flex gap-2"><Lock className="size-4 shrink-0 text-volt" /> Conexión cifrada. Nunca te pedimos datos de tarjeta ni contraseñas en esta página.</li>
+            <li className="flex gap-2"><ShieldCheck className="size-4 shrink-0 text-volt" /> No cobramos nada en línea: confirmamos disponibilidad, envío y medio de pago por WhatsApp{settings ? ` desde nuestro número oficial +${settings.whatsapp_number.replace(/^57/, '57 ')}` : ''}.</li>
+          </ul>
         </form>
 
         <aside className="h-fit space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-line lg:sticky lg:top-28">
