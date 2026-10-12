@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+
+/* ============ Design tokens — El Banquillo de Pablo ============ */
+@theme {
+  --color-ink: #0c1410;        /* noche de estadio */
+  --color-ink-2: #15201a;
+  --color-ink-3: #22302a;
+  --color-pitch: #14532d;      /* césped */
+  --color-pitch-2: #1d6b3c;
+  --color-chalk: #f5f3ee;      /* cal de la cancha */
+  --color-chalk-2: #e9e6dd;
+  --color-mute: #6b7a72;
+  --color-volt: #d4ff3a;       /* marcador / acento */
+  --color-volt-2: #bfe82a;
+  --color-card: #e5484d;       /* tarjeta roja: ofertas, errores */
+
+  --font-display: 'Big Shoulders Display', Impact, 'Arial Narrow', sans-serif;
+  --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    @apply bg-chalk text-ink font-sans antialiased;
+    font-feature-settings: 'ss01';
+  }
+  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+  :focus-visible { outline: 3px solid var(--color-volt); outline-offset: 2px; border-radius: 6px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+}
+
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+
+  .btn-primary { @apply btn bg-ink text-chalk hover:bg-ink-3; }
+  .btn-volt { @apply btn bg-volt text-ink hover:bg-volt-2; }
+  .btn-ghost { @apply btn bg-transparent text-ink ring-1 ring-ink/15 hover:bg-ink/5; }
+  .btn-danger { @apply btn bg-card text-white hover:brightness-110; }
+
+  .field { @apply grid gap-1.5 text-sm font-semibold; }
+  .input {
+    @apply h-11 w-full rounded-xl bg-white px-3.5 text-[15px] font-medium text-ink ring-1 ring-ink/15 transition
+      placeholder:text-mute/70 focus:outline-none focus:ring-2 focus:ring-pitch;
+  }
+  textarea.input { @apply h-auto py-3; }
+
+  .chip { @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider; }
+
+  /* textura sutil de césped para secciones oscuras */
+  .pitch-lines {
+    background-image:
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.025) 0 60px, transparent 60px 120px),
+      radial-gradient(ellipse at 70% 0%, rgb(212 255 58 / 0.12), transparent 60%);
+  }
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 h-11 text-sm font-bold transition
+    active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}

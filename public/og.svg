@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0c1410"/>
+  <g transform="translate(110 175) scale(4.4)">
+    <path d="M12 38V31a20 20 0 0 1 40 0v7" fill="none" stroke="#d4ff3a" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M17 41h30" stroke="#f5f3ee" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M21 41v9M43 41v9" stroke="#f5f3ee" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="32" cy="29" r="4" fill="#d4ff3a"/>
+  </g>
+  <text x="430" y="300" font-family="Impact, 'Big Shoulders Display', sans-serif" font-weight="900" font-size="110" fill="#f5f3ee">EL BANQUILLO</text>
+  <text x="434" y="390" font-family="Impact, 'Big Shoulders Display', sans-serif" font-weight="800" font-size="72" fill="#d4ff3a">DE PABLO</text>
+  <text x="434" y="460" font-family="Arial, sans-serif" font-size="30" fill="#9fb3a8">Camisetas de fútbol · Envíos a toda Colombia</text>
+</svg>
