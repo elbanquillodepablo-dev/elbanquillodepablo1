@@ -64,7 +64,7 @@ Futbolero sin exagerar: "Banquillo vacío", "Fuera de juego" (404), "¡Golazo!" 
 | Datos/caché | **TanStack Query 5** (caché, reintentos, invalidación) |
 | Backend | **Supabase**: Postgres + Auth + Storage + RLS |
 | Iconos | lucide-react |
-| Deploy | **Vercel** (`vercel.json` + funciones en `api/`) |
+| Deploy | **Netlify** (`netlify.toml` + Edge Functions en `netlify/edge-functions/`). También está listo para Vercel (`vercel.json`). |
 
 ### Supabase
 | Dato | Valor |
@@ -185,7 +185,7 @@ En la tienda (`ProductImage.tsx`): `srcset` (640w/1600w) + `sizes`, `loading="la
 | `/checkout` | Datos de envío + autorización de datos → guarda el pedido → abre WhatsApp |
 | `/terminos` | Cómo comprar seguro, envíos, cambios, garantía, retracto (Ley 1480) |
 | `/privacidad` | Política de tratamiento de datos (Ley 1581 / Decreto 1377) |
-| `/sitemap.xml`, `/robots.txt` | Generados por funciones de Vercel (`api/`) |
+| `/sitemap.xml`, `/robots.txt` | Generados por Edge Functions (`api/` reutilizado por `netlify/edge-functions/`) |
 
 ### Admin
 | Ruta | Página |
@@ -243,7 +243,27 @@ npm run typecheck
 npm run build                # genera dist/
 ```
 
-### Deploy en Vercel
+### Deploy en Netlify (principal)
+1. Netlify → **Add new site → Import an existing project → GitHub** → `elbanquillodepablo-dev/elbanquillodepablo1`.
+2. Build y publish salen de `netlify.toml` (`npm run build` → `dist`, Node 22).
+3. **Site configuration → Environment variables** (antes de desplegar, porque Vite las incrusta al compilar):
+   | Variable | Valor |
+   |---|---|
+   | `VITE_SUPABASE_URL` | `https://uymvinfxlwqzzwyditsv.supabase.co` |
+   | `VITE_SUPABASE_PUBLISHABLE_KEY` | la *publishable key* (`sb_publishable_…`) |
+   | `VITE_SITE_URL` | la URL final, ej. `https://elbanquillodepablo.netlify.app` |
+4. **Deploys → Trigger deploy → Clear cache and deploy site**.
+5. Supabase → *Authentication → URL Configuration* → *Site URL* = la URL de Netlify.
+6. Google Search Console → enviar `https://TU-SITIO/sitemap.xml`.
+
+Qué hace la configuración de Netlify:
+- `[[redirects]] /* → /index.html 200`: SPA.
+- Edge Functions (`netlify/edge-functions/`): `/sitemap.xml`, `/robots.txt` y `/producto/*`, con la vista previa del producto en el HTML para WhatsApp y Google. Reutilizan los handlers estándar de `api/` (Request → Response); `api/_shared.ts#env()` lee variables en Netlify (Deno) y en Node.
+- Cabeceras de seguridad (CSP, HSTS…) y caché inmutable de `/assets/*`: las mismas que en Vercel.
+
+> **Build:** `npm run build` ejecuta `typecheck` (app + `vite.config.ts` con `tsconfig.node.json` + `api/`) y luego `vite build`. El error `Cannot find module 'node:url'` se resolvió con `@types/node` y un tsconfig separado para `vite.config.ts`.
+
+### Deploy en Vercel (alternativo)
 1. vercel.com → **Add New → Project → Import** `elbanquillodepablo-dev/elbanquillodepablo1`.
 2. Framework: **Vite** (lo detecta solo; `vercel.json` ya trae build, rutas y cabeceras).
 3. **Environment Variables** (Production + Preview):
@@ -291,7 +311,7 @@ npm run build                # genera dist/
 ### ⏳ Pendiente (dueño de la tienda)
 - [ ] Crear el usuario `elbanquillodepablo@gmail.com` en Supabase con contraseña fuerte (§8)
 - [ ] Desactivar registros públicos en Supabase Auth
-- [ ] Deploy en Vercel + variables de entorno (§9)
+- [ ] Deploy en Netlify + variables de entorno (§9)
 - [ ] Site URL en Supabase Auth + Google Search Console con el sitemap
 - [ ] Subir fotos reales de las camisetas
 - [ ] (Recomendado) Completar en `/privacidad` el NIT o cédula del responsable si se formaliza el negocio
@@ -313,7 +333,8 @@ npm run build                # genera dist/
 | Fecha | Decisión | Por qué |
 |---|---|---|
 | 2026-10-12 | Vite + React SPA (no Next.js) | Simple de desplegar; no requiere servidor |
-| 2026-10-12 | Deploy en **Vercel** con funciones edge para meta de producto, sitemap y robots | SEO y vistas previas en WhatsApp sin migrar a SSR completo |
+| 2026-10-12 | Funciones edge con handlers estándar (`api/`) para meta de producto, sitemap y robots | SEO y vistas previas en WhatsApp sin migrar a SSR; el mismo código sirve en Netlify y en Vercel |
+| 2026-10-12 | Hosting final: **Netlify** | Elección del dueño |
 | 2026-10-12 | Admin por lista `admin_emails` + trigger | Claude no crea cuentas ni maneja contraseñas; el dueño crea el usuario y queda admin solo |
 | 2026-10-12 | Pedido = guardar en BD **y** abrir WhatsApp | Queda registro para el admin y la venta se cierra por chat, que es lo habitual en Colombia |
 | 2026-10-12 | Optimizar imágenes en el navegador | Gratis (las transformaciones de Supabase son de pago), ahorra almacenamiento y ancho de banda |

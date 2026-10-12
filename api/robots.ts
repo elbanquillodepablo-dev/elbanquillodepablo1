@@ -1,4 +1,4 @@
-import { siteOrigin } from './_shared';
+import { siteOrigin } from './_shared.ts';
 
 export const config = { runtime: 'edge' };
 

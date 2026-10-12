@@ -1,4 +1,4 @@
-import { siteOrigin, supabaseGet } from './_shared';
+import { siteOrigin, supabaseGet } from './_shared.ts';
 
 export const config = { runtime: 'edge' };
 

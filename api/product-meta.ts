@@ -1,4 +1,4 @@
-import { escapeHtml, publicImage, safeJson, siteOrigin, supabaseGet } from './_shared';
+import { escapeHtml, publicImage, safeJson, siteOrigin, supabaseGet } from './_shared.ts';
 
 export const config = { runtime: 'edge' };
 
@@ -23,8 +23,10 @@ const cop = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP',
  */
 export default async function handler(req: Request): Promise<Response> {
   const origin = siteOrigin(req);
-  const slug = new URL(req.url).searchParams.get('slug') ?? '';
-  const htmlRes = await fetch(`${new URL(req.url).origin}/index.html`);
+  // Vercel: /api/product-meta?slug=x · Netlify: /producto/x
+  const reqUrl = new URL(req.url);
+  const slug = reqUrl.searchParams.get('slug') ?? decodeURIComponent(reqUrl.pathname.split('/').filter(Boolean).pop() ?? '');
+  const htmlRes = await fetch(`${reqUrl.origin}/index.html`);
   let html = await htmlRes.text();
 
   const rows = await supabaseGet<ProductRow[]>(
