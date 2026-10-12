@@ -52,12 +52,12 @@ export default function CheckoutPage() {
     return (
       <div className="container-page py-20">
         <div className="mx-auto max-w-md space-y-4 text-center">
-          <CheckCircle2 className="mx-auto size-16 text-pitch" />
-          <h1 className="text-5xl font-black uppercase">¡Golazo!</h1>
+          <CheckCircle2 className="mx-auto size-16 text-volt" />
+          <h1 className="text-5xl font-extrabold tracking-tight">¡Golazo!</h1>
           <p className="text-mute">
-            Tu pedido <strong className="text-ink">{done.code}</strong> quedó registrado. Te confirmamos disponibilidad, envío y pago por WhatsApp.
+            Tu pedido <strong className="text-fg">{done.code}</strong> quedó registrado. Te confirmamos disponibilidad, envío y pago por WhatsApp.
           </p>
-          <a href={done.link} target="_blank" rel="noreferrer" className="btn h-12 w-full bg-pitch text-chalk">
+          <a href={done.link} target="_blank" rel="noreferrer" className="btn h-12 w-full bg-pitch text-fg">
             <MessageCircle className="size-5" /> Abrir WhatsApp
           </a>
           <Link to="/tienda" className="btn-ghost w-full">Seguir comprando</Link>
@@ -78,10 +78,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="container-page py-10">
-      <h1 className="mb-8 text-5xl font-black uppercase leading-none">Finalizar pedido</h1>
+      <h1 className="mb-8 text-5xl font-extrabold tracking-tight leading-none">Finalizar pedido</h1>
       <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
         <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2" noValidate={false}>
-          <h2 className="text-2xl font-extrabold uppercase sm:col-span-2">Datos de envío</h2>
+          <h2 className="text-2xl font-bold tracking-tight sm:col-span-2">Datos de envío</h2>
           <label className="field sm:col-span-2">Nombre completo *
             <input className="input" required autoComplete="name" value={form.customer_name} onChange={set('customer_name')} />
           </label>
@@ -121,12 +121,12 @@ export default function CheckoutPage() {
           </p>
         </form>
 
-        <aside className="h-fit space-y-4 rounded-2xl bg-white p-5 ring-1 ring-ink/10 lg:sticky lg:top-28">
-          <h2 className="text-2xl font-extrabold uppercase">Resumen</h2>
-          <ul className="divide-y divide-ink/10">
+        <aside className="h-fit space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-line lg:sticky lg:top-28">
+          <h2 className="text-2xl font-bold tracking-tight">Resumen</h2>
+          <ul className="divide-y divide-line">
             {cart.items.map((i) => (
               <li key={i.key} className="flex gap-3 py-3">
-                <div className="size-14 shrink-0 overflow-hidden rounded-lg bg-chalk-2">
+                <div className="size-14 shrink-0 overflow-hidden rounded-lg bg-surface-2">
                   {i.image && <img src={i.image} alt="" className="h-full w-full object-cover" />}
                 </div>
                 <div className="min-w-0 flex-1 text-sm">
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
               </li>
             ))}
           </ul>
-          <div className="flex items-baseline justify-between border-t border-ink/10 pt-4">
+          <div className="flex items-baseline justify-between border-t border-line pt-4">
             <span className="font-semibold text-mute">Subtotal</span>
             <span className="text-2xl font-black">{formatPrice(cart.subtotal)}</span>
           </div>

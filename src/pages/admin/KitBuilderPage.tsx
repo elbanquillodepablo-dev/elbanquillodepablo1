@@ -68,7 +68,7 @@ export default function KitBuilderPage() {
       const rows = await createProducts(drafts);
       setCreated(rows);
       qc.invalidateQueries({ queryKey: qk.products });
-      toast(`${rows.length} productos creados. Sube las fotos de cada uno 👇`);
+      toast(`${rows.length} productos creados. Sube las fotos de cada uno abajo.`);
     } catch (err) {
       const msg = errorMessage(err);
       toast(msg.includes('duplicate') ? 'Alguna de esas equipaciones ya existe' : msg, 'error');
@@ -88,7 +88,7 @@ export default function KitBuilderPage() {
       <AdminTitle title="Crear equipaciones" />
 
       <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <div className="space-y-6 rounded-2xl bg-white p-5 ring-1 ring-ink/10 sm:p-6">
+        <div className="space-y-6 rounded-2xl bg-surface p-5 ring-1 ring-line sm:p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="field sm:col-span-2">Equipo *
               <input className="input text-lg" required value={team} onChange={(e) => setTeam(e.target.value)} placeholder="Ej. Real Madrid, Colombia, Atlético Nacional…" />
@@ -125,16 +125,16 @@ export default function KitBuilderPage() {
           </div>
         </div>
 
-        <aside className="h-fit space-y-4 rounded-2xl bg-ink p-5 text-chalk lg:sticky lg:top-6">
-          <h2 className="flex items-center gap-2 text-2xl font-extrabold uppercase"><Sparkles className="size-5 text-volt" /> Vista previa</h2>
-          <p className="text-sm text-chalk/60">Se crearán <strong className="text-volt">{drafts.length}</strong> productos:</p>
+        <aside className="h-fit space-y-4 rounded-2xl bg-ink p-5 text-fg lg:sticky lg:top-6">
+          <h2 className="flex items-center gap-2 text-2xl font-bold tracking-tight"><Sparkles className="size-5 text-volt" /> Vista previa</h2>
+          <p className="text-sm text-fg/60">Se crearán <strong className="text-volt">{drafts.length}</strong> productos:</p>
           <ul className="max-h-80 space-y-2 overflow-y-auto text-sm">
             {team.trim() ? drafts.map((d) => (
-              <li key={d.slug} className="flex justify-between gap-3 rounded-lg bg-chalk/5 px-3 py-2">
+              <li key={d.slug} className="flex justify-between gap-3 rounded-lg bg-bg/5 px-3 py-2">
                 <span>{d.name}</span>
                 <span className="shrink-0 font-bold text-volt">{formatPrice(d.price)}</span>
               </li>
-            )) : <li className="text-chalk/50">Escribe el equipo…</li>}
+            )) : <li className="text-fg/50">Escribe el equipo…</li>}
           </ul>
           <button disabled={saving || !team.trim() || !drafts.length} className="btn-volt h-12 w-full">
             <Layers className="size-4" /> {saving ? 'Creando…' : `Crear ${drafts.length} productos`}
@@ -144,12 +144,12 @@ export default function KitBuilderPage() {
 
       {created.length > 0 && (
         <section className="mt-10 space-y-6">
-          <h2 className="text-3xl font-black uppercase">Ahora, las fotos</h2>
+          <h2 className="text-3xl font-extrabold tracking-tight">Ahora, las fotos</h2>
           {created.map((p) => (
-            <div key={p.id} className="rounded-2xl bg-white p-5 ring-1 ring-ink/10">
+            <div key={p.id} className="rounded-2xl bg-surface p-5 ring-1 ring-line">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <h3 className="font-sans text-lg font-extrabold">{p.name}</h3>
-                <Link to={`/admin/productos/${p.id}`} className="text-sm font-bold text-pitch">Editar detalles →</Link>
+                <Link to={`/admin/productos/${p.id}`} className="text-sm font-bold text-volt">Editar detalles →</Link>
               </div>
               <ImageManager productId={p.id} productName={p.name} images={p.images ?? []} onChange={() => refresh(p.id)} />
             </div>
@@ -169,7 +169,7 @@ function ChipGroup<T extends string>({ label, options, selected, onToggle }: {
       <div className="flex flex-wrap gap-2">
         {(Object.entries(options) as [T, string][]).map(([v, l]) => (
           <button key={v} type="button" onClick={() => onToggle(v)} aria-pressed={selected.includes(v)}
-            className={cn('rounded-full px-3.5 py-2 text-sm font-bold ring-1 transition', selected.includes(v) ? 'bg-ink text-volt ring-ink' : 'ring-ink/15 hover:ring-ink/40')}>
+            className={cn('rounded-full px-3.5 py-2 text-sm font-bold ring-1 transition', selected.includes(v) ? 'bg-volt text-fg ring-volt' : 'ring-line hover:ring-line-strong')}>
             {l}
           </button>
         ))}

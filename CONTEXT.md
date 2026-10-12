@@ -22,22 +22,32 @@ Referencia de inspiración: https://eltoldodeldeporte-tiendaoficial.netlify.app
 |---|---|
 | Nombre | **El Banquillo de Pablo** |
 | Concepto | El banquillo/dugout: donde esperan los titulares. Tono futbolero, cercano y colombiano ("Vístete de titular", "Golazo", "Fuera de juego"). |
-| Logo | `src/components/brand/Logo.tsx` y `public/favicon.svg`: arco del techo del banquillo (lima), banco con patas (tiza) y balón. Wordmark "EL BANQUILLO" + "DE PABLO" espaciado. |
-| Imagen social | `public/og.svg` |
+| Estilo | **Oscuro premium** (inspirado en la referencia El Toldo del Deporte: fondo casi negro, tarjetas grafito redondeadas de 22 px, titulares gruesos con tracking apretado) |
+| Logo | **Escudo de club oscuro** con borde lima degradado; adentro, el techo del banquillo (arco lima), el banco con patas y el balón. Wordmark "EL BANQUILLO" + "DE PABLO" espaciado en lima. Archivos: `src/components/brand/Logo.tsx` (componente), `public/logo.svg` (lockup completo), `public/favicon.svg`, `public/og.svg` (redes sociales). |
 
 ### Paleta (tokens en `src/index.css` → `@theme`)
 | Token | Hex | Uso |
 |---|---|---|
-| `ink` | `#0c1410` | Noche de estadio: fondos oscuros, texto principal |
-| `pitch` | `#14532d` | Verde césped: acentos, enlaces |
-| `chalk` | `#f5f3ee` | Cal de la cancha: fondo principal |
-| `volt` | `#d4ff3a` | Lima "marcador": CTA, badges, foco |
-| `card` | `#e5484d` | Tarjeta roja: descuentos, errores, eliminar |
-| `mute` | `#6b7a72` | Texto secundario |
+| `ink` | `#060706` | Lo más profundo: footer, sidebar admin, barras con vidrio |
+| `bg` | `#0b0d0c` | Fondo de página (nunca negro puro) |
+| `surface` / `surface-2` / `surface-3` | `#131614` / `#1b1f1d` / `#252a27` | Tarjetas, inputs, hover |
+| `line` / `line-strong` | blanco 9 % / 18 % | Bordes y divisores |
+| `fg` | `#f3f2ed` | Texto principal (17:1 de contraste) |
+| `mute` | `#8f9792` | Texto secundario (6.4:1, cumple AA) |
+| `volt` | `#cff04a` | **Único acento**: CTA, foco, badges, eyebrows |
+| `pitch` / `pitch-2` | `#17452c` / `#1d5636` | Verde césped: bloque destacado de categorías |
+| `card` | `#f05252` | Tarjeta roja: descuentos, errores, eliminar |
 
 ### Tipografía
-- **Big Shoulders Display** (titulares, en MAYÚSCULAS): estilo letrero de estadio.
-- **Manrope** (texto y UI).
+- **Geist** (titulares 800 con tracking -0.04em y textos): moderna y legible. No se usa Inter, por recomendación de la skill de diseño.
+- **Big Shoulders Display**: solo para la marca (wordmark) y la banda de equipos, con estilo de letrero de estadio.
+- Cifras con `tabular-nums` (clase `tabular`) para que los precios no "bailen".
+
+### Patrones de UI (skills ui-ux-pro-max + design-taste-frontend)
+- Header flotante tipo píldora con vidrio al hacer scroll; **barra inferior en móvil** (4 destinos con icono + texto, respeta safe-area).
+- Hero asimétrico (texto izquierda / collage bento derecha), banda marquee de equipos, categorías en **bento grid**, bloque "El titular de la temporada", lista de beneficios con divisores (sin tarjetas iguales en fila).
+- Entradas escalonadas (`.stagger` + `--i`), skeletons con shimmer, estados vacíos y de error con reintento.
+- Botones ≥ 44 px, foco visible lima, `prefers-reduced-motion` respetado y sin emojis en la UI (solo iconos SVG de Lucide).
 
 ### Tono de microcopy
 Futbolero sin exagerar: "Banquillo vacío", "Fuera de juego" (404), "¡Golazo!" (pedido enviado), "Vestuario" (login admin).
@@ -243,6 +253,7 @@ npm run build                # genera dist/
 - [x] Optimización de imágenes WebP + miniaturas
 - [x] Branding: logo, favicon, OG, paleta, tipografía
 - [x] Build de producción OK; seguridad RLS verificada
+- [x] Rediseño oscuro premium + logo escudo (skills ui-ux-pro-max y design-taste-frontend), basado en la referencia
 
 ### ⏳ Pendiente (dueño de la tienda)
 - [ ] Crear usuario admin en Supabase y darle permisos (ver §8)
@@ -279,4 +290,4 @@ npm run build                # genera dist/
 - Navegador integrado de Claude para revisar el diseño en escritorio y móvil.
 - Para continuar con IA: abre el repo, pide *"lee CONTEXT.md"* y sigue con la sección 10.
 
-> ⚠️ Nota de red: desde la red de la oficina, las conexiones a `*.supabase.co` a veces se interceptan (error de certificado / redirección). Si la tienda no carga datos en local, prueba con otra red o los datos del celular. En producción (Netlify) no aplica.
+> ⚠️ **Nota de red (2026-10-12):** desde la red de la oficina, las conexiones HTTPS a `*.supabase.co` se interceptan con un certificado no confiable y a veces redirigen a `147.45.69.3`. Afecta al navegador y a Node. **No** se debe desactivar la verificación TLS para saltarlo. Prueba con otra red (datos del celular) y consúltalo con TI. Los clientes en producción no se ven afectados.

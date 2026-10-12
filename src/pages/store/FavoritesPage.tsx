@@ -11,8 +11,8 @@ export default function FavoritesPage() {
 
   return (
     <div className="container-page py-10">
-      <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-pitch">Tu lista</p>
-      <h1 className="mb-8 text-5xl font-black uppercase leading-none sm:text-6xl">Favoritos</h1>
+      <p className="eyebrow">Tu lista</p>
+      <h1 className="mb-8 text-5xl font-extrabold tracking-tight leading-none sm:text-6xl">Favoritos</h1>
       {ids.length === 0 ? (
         <EmptyState icon={<Heart />} title="Aún no hay favoritos">
           Toca el corazón en cualquier camiseta para guardarla aquí.

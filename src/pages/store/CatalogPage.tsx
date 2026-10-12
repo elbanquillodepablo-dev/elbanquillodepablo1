@@ -58,8 +58,8 @@ export default function CatalogPage() {
   return (
     <div className="container-page py-10">
       <header className="mb-8">
-        <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-pitch">Tienda</p>
-        <h1 className="text-5xl font-black uppercase leading-none sm:text-6xl">{categoryName ?? 'Todas las camisetas'}</h1>
+        <p className="eyebrow">Tienda</p>
+        <h1 className="text-5xl font-extrabold tracking-tight leading-none sm:text-6xl">{categoryName ?? 'Todas las camisetas'}</h1>
       </header>
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -85,7 +85,7 @@ export default function CatalogPage() {
       </div>
 
       {showFilters && (
-        <div className="mb-8 grid animate-fade-up gap-6 rounded-2xl bg-white p-5 ring-1 ring-ink/10 md:grid-cols-4">
+        <div className="mb-8 grid animate-fade-up gap-6 rounded-2xl bg-surface p-5 ring-1 ring-line md:grid-cols-4">
           <FilterGroup label="Categoría" value={filters.category} onChange={(v) => setParam('categoria', v)}
             options={categories.map((c) => ({ value: c.slug, label: c.name }))} />
           <FilterGroup label="Equipación" value={filters.kit} onChange={(v) => setParam('tipo', v)}
@@ -118,7 +118,7 @@ function FilterGroup({ label, value, options, onChange }: {
 }) {
   return (
     <fieldset>
-      <legend className="mb-2 text-xs font-extrabold uppercase tracking-wider text-mute">{label}</legend>
+      <legend className="mb-2 text-xs font-bold tracking-tight tracking-wider text-mute">{label}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button
@@ -128,7 +128,7 @@ function FilterGroup({ label, value, options, onChange }: {
             aria-pressed={value === o.value}
             className={cn(
               'rounded-full px-3 py-1.5 text-xs font-bold ring-1 transition',
-              value === o.value ? 'bg-ink text-volt ring-ink' : 'ring-ink/15 hover:ring-ink/40',
+              value === o.value ? 'bg-volt text-fg ring-volt' : 'ring-line hover:ring-line-strong',
             )}
           >
             {o.label}

@@ -1,76 +1,112 @@
 @import 'tailwindcss';
 
-/* ============ Design tokens — El Banquillo de Pablo ============ */
+/* ============ Design tokens — El Banquillo de Pablo (dark) ============ */
 @theme {
-  --color-ink: #0c1410;        /* noche de estadio */
-  --color-ink-2: #15201a;
-  --color-ink-3: #22302a;
-  --color-pitch: #14532d;      /* césped */
-  --color-pitch-2: #1d6b3c;
-  --color-chalk: #f5f3ee;      /* cal de la cancha */
-  --color-chalk-2: #e9e6dd;
-  --color-mute: #6b7a72;
-  --color-volt: #d4ff3a;       /* marcador / acento */
-  --color-volt-2: #bfe82a;
-  --color-card: #e5484d;       /* tarjeta roja: ofertas, errores */
+  /* superficies (off-black, nunca #000) */
+  --color-ink: #060706;        /* lo más profundo: hero, footer, sidebar */
+  --color-bg: #0b0d0c;         /* fondo de página */
+  --color-surface: #131614;    /* tarjetas */
+  --color-surface-2: #1b1f1d;  /* tarjetas elevadas, placeholders */
+  --color-surface-3: #252a27;  /* hover */
+  --color-line: rgb(255 255 255 / 0.09);
+  --color-line-strong: rgb(255 255 255 / 0.18);
 
-  --font-display: 'Big Shoulders Display', Impact, 'Arial Narrow', sans-serif;
-  --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* texto */
+  --color-fg: #f3f2ed;         /* 17:1 sobre bg */
+  --color-mute: #8f9792;       /* 6.4:1 sobre bg */
 
-  --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
+  /* marca */
+  --color-volt: #cff04a;       /* acento único: marcador lima */
+  --color-volt-2: #bddc3a;
+  --color-pitch: #17452c;      /* verde césped profundo (superficies) */
+  --color-pitch-2: #1d5636;
+  --color-card: #f05252;       /* tarjeta roja: descuentos, errores */
 
-  --animate-fade-up: fade-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --font-display: 'Geist', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Geist', 'Segoe UI', system-ui, sans-serif;
+  --font-brand: 'Big Shoulders Display', Impact, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-fade-up: fade-up 0.6s var(--ease-out-expo) both;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: none; }
+  }
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+  @keyframes shimmer {
+    to { background-position: -200% 0; }
   }
 }
 
 @layer base {
-  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; color-scheme: dark; }
   body {
-    @apply bg-chalk text-ink font-sans antialiased;
-    font-feature-settings: 'ss01';
+    @apply bg-bg text-fg font-sans antialiased;
+    touch-action: manipulation;
   }
-  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
-  :focus-visible { outline: 3px solid var(--color-volt); outline-offset: 2px; border-radius: 6px; }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.035em; text-wrap: balance; }
+  ::selection { background: var(--color-volt); color: var(--color-ink); }
+  :focus-visible { outline: 2px solid var(--color-volt); outline-offset: 3px; border-radius: 8px; }
+  button, [role='button'], a { cursor: pointer; }
+  select option { background: var(--color-surface); }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   }
 }
 
 @layer components {
-  .container-page { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+  .container-page { @apply mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10; }
 
-  .btn-primary { @apply btn bg-ink text-chalk hover:bg-ink-3; }
+  .btn-primary { @apply btn bg-fg text-ink hover:bg-white; }
   .btn-volt { @apply btn bg-volt text-ink hover:bg-volt-2; }
-  .btn-ghost { @apply btn bg-transparent text-ink ring-1 ring-ink/15 hover:bg-ink/5; }
+  .btn-ghost { @apply btn bg-surface text-fg ring-1 ring-line hover:bg-surface-2 hover:ring-line-strong; }
   .btn-danger { @apply btn bg-card text-white hover:brightness-110; }
 
-  .field { @apply grid gap-1.5 text-sm font-semibold; }
+  .field { @apply grid gap-2 text-sm font-medium text-fg/90; }
   .input {
-    @apply h-11 w-full rounded-xl bg-white px-3.5 text-[15px] font-medium text-ink ring-1 ring-ink/15 transition
-      placeholder:text-mute/70 focus:outline-none focus:ring-2 focus:ring-pitch;
+    @apply h-12 w-full rounded-xl bg-surface-2 px-4 text-base text-fg ring-1 ring-line transition
+      placeholder:text-mute focus:outline-none focus:ring-2 focus:ring-volt/70;
   }
   textarea.input { @apply h-auto py-3; }
 
-  .chip { @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider; }
+  .chip { @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider; }
 
-  /* textura sutil de césped para secciones oscuras */
-  .pitch-lines {
+  /* panel con borde de refracción sutil */
+  .panel { @apply rounded-[22px] bg-surface ring-1 ring-line shadow-[inset_0_1px_0_rgb(255_255_255/0.04)]; }
+
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.22em] text-volt; }
+
+  /* luz de estadio para secciones hero */
+  .stadium-glow {
     background-image:
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.025) 0 60px, transparent 60px 120px),
-      radial-gradient(ellipse at 70% 0%, rgb(212 255 58 / 0.12), transparent 60%);
+      radial-gradient(60% 50% at 75% 0%, rgb(207 240 74 / 0.10), transparent 70%),
+      radial-gradient(40% 40% at 0% 100%, rgb(23 69 44 / 0.45), transparent 70%);
   }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-2) 50%, var(--color-surface) 75%);
+    background-size: 200% 100%;
+    @apply animate-shimmer;
+  }
+
+  /* entrada escalonada: style={{ '--i': index }} */
+  .stagger { animation: fade-up 0.6s var(--ease-out-expo) both; animation-delay: calc(var(--i, 0) * 45ms); }
 }
 
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 h-11 text-sm font-bold transition
-    active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 h-12 text-sm font-semibold transition duration-200
+    active:scale-[.98] disabled:opacity-45 disabled:pointer-events-none select-none;
 }
 
 @utility scrollbar-none {
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
 }
+
+@utility tabular { font-variant-numeric: tabular-nums; }

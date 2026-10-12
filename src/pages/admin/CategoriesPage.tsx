@@ -42,13 +42,13 @@ export default function CategoriesPage() {
   return (
     <>
       <AdminTitle title="Categorías" />
-      <form onSubmit={onCreate} className="mb-6 flex flex-wrap gap-3 rounded-2xl bg-white p-4 ring-1 ring-ink/10">
+      <form onSubmit={onCreate} className="mb-6 flex flex-wrap gap-3 rounded-2xl bg-surface p-4 ring-1 ring-line">
         <input className="input max-w-xs flex-1" placeholder="Nombre (ej. Liga BetPlay)" value={name} onChange={(e) => setName(e.target.value)} aria-label="Nombre" />
         <input className="input max-w-md flex-[2]" placeholder="Descripción corta" value={description} onChange={(e) => setDescription(e.target.value)} aria-label="Descripción" />
         <button className="btn-primary"><Plus className="size-4" /> Agregar</button>
       </form>
 
-      <ul className="divide-y divide-ink/10 overflow-hidden rounded-2xl bg-white ring-1 ring-ink/10">
+      <ul className="divide-y divide-line overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
         {categories.map((c) => (
           <li key={c.id} className={cn('flex flex-wrap items-center gap-3 p-4', !c.is_active && 'opacity-55')}>
             <input type="number" className="input w-20" defaultValue={c.sort_order} aria-label="Orden"
@@ -58,7 +58,7 @@ export default function CategoriesPage() {
                 onBlur={(e) => e.target.value !== c.name && save(c, { name: e.target.value })} />
               <p className="mt-1 text-xs text-mute">/{c.slug}</p>
             </div>
-            <button onClick={() => save(c, { is_active: !c.is_active })} aria-label={c.is_active ? 'Ocultar' : 'Mostrar'} className="grid size-9 place-items-center rounded-full hover:bg-ink/5">
+            <button onClick={() => save(c, { is_active: !c.is_active })} aria-label={c.is_active ? 'Ocultar' : 'Mostrar'} className="grid size-9 place-items-center rounded-full hover:bg-surface-2">
               {c.is_active ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
             </button>
             <button

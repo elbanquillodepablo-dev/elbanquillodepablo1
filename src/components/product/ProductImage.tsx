@@ -14,11 +14,11 @@ interface Props {
 }
 
 const KIT_COLORS: Partial<Record<KitType, [string, string]>> = {
-  local: ['#f5f3ee', '#0c1410'],
-  visitante: ['#0c1410', '#d4ff3a'],
-  tercera: ['#14532d', '#f5f3ee'],
-  portero: ['#d4ff3a', '#0c1410'],
-  retro: ['#e9e6dd', '#14532d'],
+  local: ['#f3f2ed', '#2a302c'],
+  visitante: ['#1b1f1d', '#cff04a'],
+  tercera: ['#17452c', '#f3f2ed'],
+  portero: ['#cff04a', '#0b0d0c'],
+  retro: ['#e6dfcf', '#17452c'],
 };
 
 /** Imagen optimizada: srcset (thumb 640w / full 1600w), lazy-load, sin saltos de layout y fondo mientras carga. */
@@ -49,10 +49,10 @@ export function ProductImage({ image, alt, kit = 'local', variant = 'card', prio
 
 /** Silueta de camiseta para productos sin foto todavía */
 export function JerseyPlaceholder({ kit = 'local', className }: { kit?: KitType; className?: string }) {
-  const [body, accent] = KIT_COLORS[kit] ?? ['#f5f3ee', '#0c1410'];
+  const [body, accent] = KIT_COLORS[kit] ?? ['#f3f2ed', '#2a302c'];
   return (
-    <div className={cn('grid h-full w-full place-items-center bg-chalk-2', className)}>
-      <svg viewBox="0 0 120 120" className="w-3/5 drop-shadow-sm" aria-hidden="true">
+    <div className={cn('grid h-full w-full place-items-center bg-[radial-gradient(circle_at_50%_35%,#232825,#121513_70%)]', className)}>
+      <svg viewBox="0 0 120 120" className="w-3/5 drop-shadow-[0_18px_30px_rgb(0_0_0/0.5)]" aria-hidden="true">
         <path
           d="M42 14 L24 22 L8 42 L22 54 L30 46 L30 106 L90 106 L90 46 L98 54 L112 42 L96 22 L78 14 C74 22 66 26 60 26 C54 26 46 22 42 14 Z"
           fill={body}

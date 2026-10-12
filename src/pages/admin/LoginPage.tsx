@@ -31,11 +31,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="pitch-lines grid min-h-dvh place-items-center bg-ink p-4">
-      <form onSubmit={onSubmit} className="w-full max-w-sm animate-fade-up space-y-5 rounded-3xl bg-chalk p-7 shadow-2xl">
+    <div className="stadium-glow grid min-h-dvh place-items-center bg-ink p-4">
+      <form onSubmit={onSubmit} className="w-full max-w-sm animate-fade-up space-y-5 panel p-7 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.6)]">
         <Logo />
         <div>
-          <h1 className="flex items-center gap-2 text-3xl font-black uppercase"><Lock className="size-6 text-pitch" /> Vestuario</h1>
+          <h1 className="flex items-center gap-2 text-3xl font-extrabold tracking-tight"><Lock className="size-6 text-volt" /> Vestuario</h1>
           <p className="text-sm text-mute">Acceso solo para administración.</p>
         </div>
         <label className="field">Correo

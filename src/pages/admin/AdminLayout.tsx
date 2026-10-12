@@ -26,7 +26,7 @@ export function RequireAdmin() {
     return (
       <div className="grid min-h-dvh place-items-center p-6 text-center">
         <div className="space-y-4">
-          <h1 className="text-4xl font-black uppercase">Sin permisos</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight">Sin permisos</h1>
           <p className="text-mute">Tu usuario ({session.user.email}) no es administrador.</p>
           <button onClick={signOut} className="btn-primary">Cerrar sesión</button>
         </div>
@@ -42,7 +42,7 @@ function AdminLayout() {
 
   const sidebar = (
     <nav className="flex h-full flex-col gap-1 p-4" aria-label="Administración">
-      <Link to="/admin" className="mb-6 px-2"><Logo inverted /></Link>
+      <Link to="/admin" className="mb-6 px-2"><Logo /></Link>
       {NAV.map(({ to, label, icon: Icon, end }) => (
         <NavLink
           key={to}
@@ -51,37 +51,37 @@ function AdminLayout() {
           onClick={() => setOpen(false)}
           className={({ isActive }) =>
             cn('flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition',
-              isActive ? 'bg-volt text-ink' : 'text-chalk/75 hover:bg-chalk/10 hover:text-chalk')
+              isActive ? 'bg-volt text-ink' : 'text-fg/75 hover:bg-bg/10 hover:text-fg')
           }
         >
           <Icon className="size-[18px]" /> {label}
         </NavLink>
       ))}
-      <div className="mt-auto space-y-1 border-t border-chalk/10 pt-4">
-        <a href="/" target="_blank" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-chalk/75 hover:bg-chalk/10">
+      <div className="mt-auto space-y-1 border-t border-line pt-4">
+        <a href="/" target="_blank" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-fg/75 hover:bg-bg/10">
           <ExternalLink className="size-[18px]" /> Ver tienda
         </a>
-        <button onClick={signOut} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-chalk/75 hover:bg-chalk/10">
+        <button onClick={signOut} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-fg/75 hover:bg-bg/10">
           <LogOut className="size-[18px]" /> Salir
         </button>
-        <p className="truncate px-3 pt-2 text-xs text-chalk/40">{session?.user.email}</p>
+        <p className="truncate px-3 pt-2 text-xs text-fg/40">{session?.user.email}</p>
       </div>
     </nav>
   );
 
   return (
-    <div className="min-h-dvh bg-chalk lg:grid lg:grid-cols-[260px_1fr]">
-      <aside className="pitch-lines sticky top-0 hidden h-dvh bg-ink lg:block">{sidebar}</aside>
+    <div className="min-h-dvh bg-bg lg:grid lg:grid-cols-[260px_1fr]">
+      <aside className="stadium-glow sticky top-0 hidden h-dvh bg-ink lg:block">{sidebar}</aside>
 
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between bg-ink px-4 lg:hidden">
-        <Logo inverted className="scale-90 origin-left" />
-        <button onClick={() => setOpen(true)} aria-label="Abrir menú" className="text-chalk"><Menu className="size-6" /></button>
+        <Logo className="scale-90 origin-left" />
+        <button onClick={() => setOpen(true)} aria-label="Abrir menú" className="text-fg"><Menu className="size-6" /></button>
       </header>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
           <div className="absolute inset-0 bg-ink/60" onClick={() => setOpen(false)} />
-          <aside className="pitch-lines absolute inset-y-0 left-0 w-72 bg-ink">
-            <button onClick={() => setOpen(false)} aria-label="Cerrar menú" className="absolute right-3 top-4 text-chalk"><X className="size-6" /></button>
+          <aside className="stadium-glow absolute inset-y-0 left-0 w-72 bg-ink">
+            <button onClick={() => setOpen(false)} aria-label="Cerrar menú" className="absolute right-3 top-4 text-fg"><X className="size-6" /></button>
             {sidebar}
           </aside>
         </div>
@@ -97,7 +97,7 @@ function AdminLayout() {
 export function AdminTitle({ title, children }: { title: string; children?: ReactNode }) {
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <h1 className="text-4xl font-black uppercase leading-none sm:text-5xl">{title}</h1>
+      <h1 className="text-4xl font-extrabold tracking-tight leading-none sm:text-5xl">{title}</h1>
       {children && <div className="flex flex-wrap gap-2">{children}</div>}
     </div>
   );

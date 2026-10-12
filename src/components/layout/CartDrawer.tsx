@@ -23,11 +23,11 @@ export function CartDrawer() {
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Carrito">
-      <div className="absolute inset-0 bg-ink/50 backdrop-blur-sm" onClick={close} />
-      <aside className="absolute inset-y-0 right-0 flex w-full max-w-md animate-fade-up flex-col bg-chalk shadow-2xl">
-        <header className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
-          <h2 className="text-2xl font-black uppercase">Tu carrito</h2>
-          <button onClick={close} aria-label="Cerrar carrito" className="grid size-10 place-items-center rounded-full hover:bg-ink/5">
+      <div className="absolute inset-0 bg-ink/70 backdrop-blur-sm" onClick={close} />
+      <aside className="absolute inset-y-0 right-0 flex w-full max-w-md animate-fade-up flex-col bg-bg shadow-2xl">
+        <header className="flex items-center justify-between border-b border-line px-5 py-4">
+          <h2 className="text-2xl font-extrabold tracking-tight">Tu carrito</h2>
+          <button onClick={close} aria-label="Cerrar carrito" className="grid size-10 place-items-center rounded-full hover:bg-surface-2">
             <X className="size-5" />
           </button>
         </header>
@@ -41,10 +41,10 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
-            <ul className="flex-1 divide-y divide-ink/10 overflow-y-auto px-5">
+            <ul className="flex-1 divide-y divide-line overflow-y-auto px-5">
               {items.map((i) => (
                 <li key={i.key} className="flex gap-4 py-4">
-                  <Link to={`/producto/${i.slug}`} onClick={close} className="size-20 shrink-0 overflow-hidden rounded-xl bg-chalk-2">
+                  <Link to={`/producto/${i.slug}`} onClick={close} className="size-20 shrink-0 overflow-hidden rounded-xl bg-surface-2">
                     {i.image && <img src={i.image} alt="" className="h-full w-full object-cover" loading="lazy" />}
                   </Link>
                   <div className="flex min-w-0 flex-1 flex-col">
@@ -54,7 +54,7 @@ export function CartDrawer() {
                       {(i.customName || i.customNumber) && ` · ${i.customName ?? ''} ${i.customNumber ?? ''}`}
                     </p>
                     <div className="mt-auto flex items-center justify-between pt-2">
-                      <div className="flex items-center rounded-full ring-1 ring-ink/15">
+                      <div className="flex items-center rounded-full ring-1 ring-line">
                         <button onClick={() => setQuantity(i.key, i.quantity - 1)} aria-label="Menos" className="grid size-8 place-items-center"><Minus className="size-3.5" /></button>
                         <span className="w-6 text-center text-sm font-bold">{i.quantity}</span>
                         <button onClick={() => setQuantity(i.key, i.quantity + 1)} aria-label="Más" className="grid size-8 place-items-center"><Plus className="size-3.5" /></button>
@@ -68,7 +68,7 @@ export function CartDrawer() {
                 </li>
               ))}
             </ul>
-            <footer className="space-y-3 border-t border-ink/10 p-5">
+            <footer className="space-y-3 border-t border-line p-5">
               <div className="flex items-baseline justify-between">
                 <span className="text-sm font-semibold text-mute">Subtotal</span>
                 <span className="text-2xl font-black">{formatPrice(subtotal)}</span>

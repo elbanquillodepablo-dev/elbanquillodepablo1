@@ -13,9 +13,9 @@ import { AdminTitle } from './AdminLayout';
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   pendiente: 'bg-volt text-ink',
-  confirmado: 'bg-pitch text-chalk',
-  enviado: 'bg-ink text-chalk',
-  entregado: 'bg-chalk-2 text-ink',
+  confirmado: 'bg-pitch text-fg',
+  enviado: 'bg-surface-2 text-fg ring-1 ring-line',
+  entregado: 'bg-surface-2 text-fg',
   cancelado: 'bg-card text-white',
 };
 
@@ -41,18 +41,18 @@ export default function OrdersPage() {
       <div className="mb-5 flex flex-wrap gap-2">
         {(['', ...Object.keys(ORDER_STATUS_LABELS)] as (OrderStatus | '')[]).map((s) => (
           <button key={s || 'all'} onClick={() => setFilter(s)} aria-pressed={filter === s}
-            className={cn('rounded-full px-3.5 py-1.5 text-sm font-bold ring-1', filter === s ? 'bg-ink text-volt ring-ink' : 'ring-ink/15')}>
+            className={cn('rounded-full px-3.5 py-1.5 text-sm font-bold ring-1', filter === s ? 'bg-volt text-fg ring-volt' : 'ring-line')}>
             {s ? ORDER_STATUS_LABELS[s] : 'Todos'}
           </button>
         ))}
       </div>
 
       {isLoading ? <Spinner /> : orders.length === 0 ? (
-        <p className="rounded-2xl bg-white p-8 text-center text-sm text-mute ring-1 ring-ink/10">No hay pedidos.</p>
+        <p className="rounded-2xl bg-surface p-8 text-center text-sm text-mute ring-1 ring-line">No hay pedidos.</p>
       ) : (
         <div className="space-y-4">
           {orders.map((o) => (
-            <article key={o.id} className="rounded-2xl bg-white p-5 ring-1 ring-ink/10">
+            <article key={o.id} className="rounded-2xl bg-surface p-5 ring-1 ring-line">
               <header className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="font-display text-2xl font-black">{o.code}</p>
@@ -71,9 +71,9 @@ export default function OrdersPage() {
                   <p>{o.address}{o.neighborhood && `, ${o.neighborhood}`}</p>
                   <p>{o.city}{o.department && `, ${o.department}`}</p>
                   {o.reference && <p className="text-mute">Ref: {o.reference}</p>}
-                  {o.notes && <p className="mt-1 rounded-lg bg-chalk p-2 text-xs">{o.notes}</p>}
+                  {o.notes && <p className="mt-1 rounded-lg bg-bg p-2 text-xs">{o.notes}</p>}
                   <a href={whatsappLink(o.phone.startsWith('57') || o.phone.startsWith('+') ? o.phone : `57${o.phone}`, `¡Hola ${o.customer_name.split(' ')[0]}! Te escribimos de El Banquillo de Pablo por tu pedido ${o.code}.`)}
-                    target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 font-bold text-pitch">
+                    target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 font-bold text-volt">
                     <MessageCircle className="size-4" /> {o.phone}
                   </a>
                 </div>
@@ -84,7 +84,7 @@ export default function OrdersPage() {
                       <span className="font-bold">{formatPrice(i.unit_price * i.quantity)}</span>
                     </li>
                   ))}
-                  <li className="flex justify-between border-t border-ink/10 pt-2 font-extrabold">
+                  <li className="flex justify-between border-t border-line pt-2 font-extrabold">
                     <span>Subtotal</span><span>{formatPrice(o.subtotal)}</span>
                   </li>
                 </ul>

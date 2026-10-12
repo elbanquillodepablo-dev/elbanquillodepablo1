@@ -46,15 +46,15 @@ export default function ProductsPage() {
       <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar producto o equipo…" className="input mb-5 max-w-sm" aria-label="Buscar" />
 
       {isLoading ? <Spinner /> : (
-        <div className="overflow-hidden rounded-2xl bg-white ring-1 ring-ink/10">
-          <ul className="divide-y divide-ink/10">
+        <div className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
+          <ul className="divide-y divide-line">
             {products.map((p) => (
               <li key={p.id} className={cn('flex items-center gap-4 p-3 sm:p-4', !p.is_active && 'opacity-55')}>
-                <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-chalk-2">
+                <div className="size-16 shrink-0 overflow-hidden rounded-xl bg-surface-2">
                   <ProductImage image={p.images[0]} alt={p.name} kit={p.kit_type} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <Link to={`/admin/productos/${p.id}`} className="font-bold hover:text-pitch">{p.name}</Link>
+                  <Link to={`/admin/productos/${p.id}`} className="font-bold hover:text-volt">{p.name}</Link>
                   <p className="text-xs text-mute">
                     {KIT_LABELS[p.kit_type]} · {p.version} · {p.images.length} foto{p.images.length !== 1 && 's'} · {p.category?.name ?? 'Sin categoría'}
                   </p>
@@ -62,12 +62,12 @@ export default function ProductsPage() {
                 <p className="hidden font-extrabold sm:block">{formatPrice(p.price)}</p>
                 <div className="flex items-center gap-1">
                   <IconBtn label={p.is_featured ? 'Quitar de destacados' : 'Destacar'} onClick={() => toggle.mutate({ id: p.id, patch: { is_featured: !p.is_featured } })}>
-                    <Star className={cn('size-4', p.is_featured && 'fill-volt text-ink')} />
+                    <Star className={cn('size-4', p.is_featured && 'fill-volt text-fg')} />
                   </IconBtn>
                   <IconBtn label={p.is_active ? 'Ocultar de la tienda' : 'Publicar'} onClick={() => toggle.mutate({ id: p.id, patch: { is_active: !p.is_active } })}>
                     {p.is_active ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
                   </IconBtn>
-                  <Link to={`/admin/productos/${p.id}`} aria-label="Editar" title="Editar" className="grid size-9 place-items-center rounded-full hover:bg-ink/5">
+                  <Link to={`/admin/productos/${p.id}`} aria-label="Editar" title="Editar" className="grid size-9 place-items-center rounded-full hover:bg-surface-2">
                     <Pencil className="size-4" />
                   </Link>
                   <IconBtn label="Eliminar" onClick={() => confirm(`¿Eliminar "${p.name}" y sus fotos? No se puede deshacer.`) && remove.mutate(p)}>
@@ -86,7 +86,7 @@ export default function ProductsPage() {
 
 function IconBtn({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} aria-label={label} title={label} className="grid size-9 place-items-center rounded-full hover:bg-ink/5">
+    <button type="button" onClick={onClick} aria-label={label} title={label} className="grid size-9 place-items-center rounded-full hover:bg-surface-2">
       {children}
     </button>
   );

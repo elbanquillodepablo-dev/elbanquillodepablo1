@@ -76,14 +76,14 @@ export default function ProductPage() {
 
   return (
     <div className="container-page py-8">
-      <Link to="/tienda" className="mb-6 inline-flex items-center gap-1 text-sm font-bold text-mute hover:text-ink">
+      <Link to="/tienda" className="mb-6 inline-flex items-center gap-1 text-sm font-bold text-mute hover:text-fg">
         <ChevronLeft className="size-4" /> Volver a la tienda
       </Link>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
         {/* Galería */}
         <div className="space-y-3 lg:sticky lg:top-28 lg:self-start">
-          <div className="aspect-[4/5] overflow-hidden rounded-3xl bg-chalk-2">
+          <div className="aspect-[4/5] overflow-hidden rounded-3xl bg-surface-2">
             <ProductImage key={active} image={product.images[active]} alt={product.name} kit={product.kit_type} variant="full" priority />
           </div>
           {product.images.length > 1 && (
@@ -93,7 +93,7 @@ export default function ProductPage() {
                   key={img.id}
                   onClick={() => setActive(i)}
                   aria-label={`Ver foto ${i + 1}`}
-                  className={cn('size-20 shrink-0 overflow-hidden rounded-xl ring-2 transition', i === active ? 'ring-ink' : 'ring-transparent opacity-70 hover:opacity-100')}
+                  className={cn('size-20 shrink-0 overflow-hidden rounded-xl ring-2 transition', i === active ? 'ring-volt' : 'ring-transparent opacity-70 hover:opacity-100')}
                 >
                   <ProductImage image={img} alt="" kit={product.kit_type} />
                 </button>
@@ -106,14 +106,14 @@ export default function ProductPage() {
         <div className="space-y-6">
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
-              <span className="chip bg-ink text-volt">{KIT_LABELS[product.kit_type]}</span>
-              <span className="chip bg-chalk-2 text-ink">{VERSION_LABELS[product.version]}</span>
-              <span className="chip bg-chalk-2 text-ink">{AUDIENCE_LABELS[product.audience]}</span>
+              <span className="chip bg-volt text-ink">{KIT_LABELS[product.kit_type]}</span>
+              <span className="chip bg-surface-2 text-fg">{VERSION_LABELS[product.version]}</span>
+              <span className="chip bg-surface-2 text-fg">{AUDIENCE_LABELS[product.audience]}</span>
             </div>
             <p className="text-sm font-bold uppercase tracking-wider text-mute">
               {[product.team, product.league, product.season].filter(Boolean).join(' · ')}
             </p>
-            <h1 className="text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{product.name}</h1>
+            <h1 className="text-5xl font-extrabold tracking-tight leading-[0.9] sm:text-6xl">{product.name}</h1>
             <p className="flex items-baseline gap-3">
               <span className="text-3xl font-extrabold">{formatPrice(product.price)}</span>
               {off && (
@@ -125,12 +125,12 @@ export default function ProductPage() {
             </p>
           </div>
 
-          {product.description && <p className="leading-relaxed text-ink/80">{product.description}</p>}
+          {product.description && <p className="leading-relaxed text-fg/80">{product.description}</p>}
 
           {/* Tallas */}
           <fieldset>
-            <legend className="mb-2 flex w-full items-center justify-between text-sm font-extrabold uppercase tracking-wider">
-              Talla {size && <span className="text-pitch">· {size}</span>}
+            <legend className="mb-2 flex w-full items-center justify-between text-sm font-bold tracking-tight tracking-wider">
+              Talla {size && <span className="text-volt">· {size}</span>}
               <span className="flex items-center gap-1 text-xs font-semibold normal-case tracking-normal text-mute">
                 <Ruler className="size-3.5" /> {product.version === 'jugador' ? 'Corte ajustado: considera una talla más' : 'Corte regular'}
               </span>
@@ -144,7 +144,7 @@ export default function ProductPage() {
                   aria-pressed={size === s}
                   className={cn(
                     'h-12 min-w-14 rounded-xl px-4 text-sm font-extrabold ring-1 transition',
-                    size === s ? 'bg-ink text-volt ring-ink' : 'bg-white ring-ink/15 hover:ring-ink',
+                    size === s ? 'bg-volt text-fg ring-volt' : 'bg-surface ring-line hover:ring-line-strong',
                   )}
                 >
                   {s}
@@ -155,9 +155,9 @@ export default function ProductPage() {
           </fieldset>
 
           {/* Personalización */}
-          <div className="rounded-2xl bg-white p-4 ring-1 ring-ink/10">
+          <div className="rounded-2xl bg-surface p-4 ring-1 ring-line">
             <label className="flex cursor-pointer items-center gap-3 text-sm font-bold">
-              <input type="checkbox" checked={customize} onChange={(e) => setCustomize(e.target.checked)} className="size-5 accent-pitch" />
+              <input type="checkbox" checked={customize} onChange={(e) => setCustomize(e.target.checked)} className="size-5 accent-volt" />
               Personalizar con nombre y número
             </label>
             {customize && (
@@ -181,7 +181,7 @@ export default function ProductPage() {
               onClick={() => favs.toggle(product.id)}
               aria-pressed={isFav}
               aria-label={isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-              className="grid size-14 place-items-center rounded-full ring-1 ring-ink/15 hover:bg-ink/5"
+              className="grid size-14 place-items-center rounded-full ring-1 ring-line hover:bg-surface-2"
             >
               <Heart className={cn('size-5', isFav && 'fill-card text-card')} />
             </button>
@@ -191,7 +191,7 @@ export default function ProductPage() {
               href={whatsappLink(settings.whatsapp_number, productInquiryMessage(product.name, window.location.href, size))}
               target="_blank"
               rel="noreferrer"
-              className="btn h-12 w-full bg-pitch text-chalk hover:bg-pitch-2"
+              className="btn h-12 w-full bg-pitch text-fg hover:bg-pitch-2"
             >
               <MessageCircle className="size-5" /> Preguntar por WhatsApp
             </a>
@@ -203,7 +203,7 @@ export default function ProductPage() {
       {/* Relacionados: otras equipaciones del mismo equipo */}
       {(related.data?.filter((p) => p.id !== product.id).length ?? 0) > 0 && (
         <section className="mt-20">
-          <h2 className="mb-6 text-4xl font-black uppercase">Más de {product.team}</h2>
+          <h2 className="mb-6 text-4xl font-extrabold tracking-tight">Más de {product.team}</h2>
           <ProductGrid products={related.data!.filter((p) => p.id !== product.id).slice(0, 4)} />
         </section>
       )}

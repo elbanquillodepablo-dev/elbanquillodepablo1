@@ -27,8 +27,8 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map(({ label, value, icon: Icon }) => (
-          <div key={label} className="rounded-2xl bg-white p-5 ring-1 ring-ink/10">
-            <Icon className="size-5 text-pitch" />
+          <div key={label} className="rounded-2xl bg-surface p-5 ring-1 ring-line">
+            <Icon className="size-5 text-volt" />
             <p className="font-display mt-3 text-5xl font-black">{value}</p>
             <p className="text-sm font-semibold text-mute">{label}</p>
           </div>
@@ -36,10 +36,10 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl bg-white p-5 ring-1 ring-ink/10">
-          <h2 className="mb-4 text-2xl font-extrabold uppercase">Últimos pedidos</h2>
+        <section className="rounded-2xl bg-surface p-5 ring-1 ring-line">
+          <h2 className="mb-4 text-2xl font-bold tracking-tight">Últimos pedidos</h2>
           {orders.length === 0 ? <p className="text-sm text-mute">Aún no hay pedidos.</p> : (
-            <ul className="divide-y divide-ink/10">
+            <ul className="divide-y divide-line">
               {orders.slice(0, 6).map((o) => (
                 <li key={o.id} className="flex items-center justify-between gap-3 py-3 text-sm">
                   <div>
@@ -54,17 +54,17 @@ export default function DashboardPage() {
               ))}
             </ul>
           )}
-          <Link to="/admin/pedidos" className="mt-3 inline-block text-sm font-bold text-pitch">Ver todos →</Link>
+          <Link to="/admin/pedidos" className="mt-3 inline-block text-sm font-bold text-volt">Ver todos →</Link>
         </section>
 
-        <section className="rounded-2xl bg-white p-5 ring-1 ring-ink/10">
-          <h2 className="mb-4 text-2xl font-extrabold uppercase">Productos sin fotos</h2>
-          {noImages.length === 0 ? <p className="text-sm text-mute">¡Todo con fotos! 🙌</p> : (
-            <ul className="divide-y divide-ink/10">
+        <section className="rounded-2xl bg-surface p-5 ring-1 ring-line">
+          <h2 className="mb-4 text-2xl font-bold tracking-tight">Productos sin fotos</h2>
+          {noImages.length === 0 ? <p className="text-sm text-mute">Todos los productos tienen fotos.</p> : (
+            <ul className="divide-y divide-line">
               {noImages.slice(0, 6).map((p) => (
                 <li key={p.id} className="flex items-center justify-between py-3 text-sm">
                   <span className="font-bold">{p.name}</span>
-                  <Link to={`/admin/productos/${p.id}`} className="font-bold text-pitch">Subir fotos</Link>
+                  <Link to={`/admin/productos/${p.id}`} className="font-bold text-volt">Subir fotos</Link>
                 </li>
               ))}
             </ul>

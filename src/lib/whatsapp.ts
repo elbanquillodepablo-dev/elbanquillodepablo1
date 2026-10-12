@@ -16,7 +16,7 @@ export function orderMessage(code: string, items: CartItem[], customer: Customer
     return `• ${i.quantity} × ${i.name} (talla ${i.size})${custom} — ${formatPrice(i.price * i.quantity)}`;
   });
   return [
-    `¡Hola! Quiero confirmar mi pedido *${code}* 🏟️`,
+    `¡Hola! Quiero confirmar mi pedido *${code}*`,
     '',
     ...lines,
     '',

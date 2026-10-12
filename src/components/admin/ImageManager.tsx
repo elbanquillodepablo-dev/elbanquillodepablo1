@@ -79,13 +79,13 @@ export function ImageManager({ productId, productName, images, onChange }: Props
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
         {images.map((img, i) => (
-          <figure key={img.id} className="group relative aspect-[4/5] overflow-hidden rounded-xl bg-chalk-2">
+          <figure key={img.id} className="group relative aspect-[4/5] overflow-hidden rounded-xl bg-surface-2">
             <ProductImage image={img} alt={img.alt ?? ''} />
             {i === 0 && <span className="chip absolute left-2 top-2 bg-volt text-ink">Portada</span>}
             <div className="absolute inset-x-1 bottom-1 flex justify-between gap-1 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
               <div className="flex gap-1">
-                <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Mover antes" className="grid size-8 place-items-center rounded-full bg-white/90 disabled:opacity-30"><ArrowLeft className="size-4" /></button>
-                <button type="button" disabled={i === images.length - 1} onClick={() => move(i, 1)} aria-label="Mover después" className="grid size-8 place-items-center rounded-full bg-white/90 disabled:opacity-30"><ArrowRight className="size-4" /></button>
+                <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Mover antes" className="grid size-8 place-items-center rounded-full bg-ink/70 disabled:opacity-30"><ArrowLeft className="size-4" /></button>
+                <button type="button" disabled={i === images.length - 1} onClick={() => move(i, 1)} aria-label="Mover después" className="grid size-8 place-items-center rounded-full bg-ink/70 disabled:opacity-30"><ArrowRight className="size-4" /></button>
               </div>
               <button type="button" onClick={() => remove(img)} aria-label="Eliminar foto" className="grid size-8 place-items-center rounded-full bg-card text-white"><Trash2 className="size-4" /></button>
             </div>
@@ -101,17 +101,17 @@ export function ImageManager({ productId, productName, images, onChange }: Props
           disabled={!!progress}
           className={cn(
             'flex aspect-[4/5] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-3 text-center text-xs font-bold transition',
-            dragging ? 'border-pitch bg-pitch/5' : 'border-ink/20 hover:border-ink/50',
+            dragging ? 'border-volt bg-volt/5' : 'border-line hover:border-line-strong',
           )}
         >
           {progress ? (
             <>
-              <Loader2 className="size-6 animate-spin text-pitch" />
+              <Loader2 className="size-6 animate-spin text-volt" />
               Optimizando {progress.done}/{progress.total}
             </>
           ) : (
             <>
-              <ImagePlus className="size-6 text-pitch" />
+              <ImagePlus className="size-6 text-volt" />
               Subir fotos
               <span className="font-medium text-mute">o arrástralas aquí</span>
             </>
@@ -134,7 +134,7 @@ export function ImageManager({ productId, productName, images, onChange }: Props
       <p className="text-xs text-mute">
         Las fotos se convierten automáticamente a WebP (máx. 1600 px) y se crea una miniatura de 640 px. La primera foto es la portada.
         {savings && (
-          <strong className="ml-1 text-pitch">
+          <strong className="ml-1 text-volt">
             Última subida: {formatBytes(savings.before)} → {formatBytes(savings.after)} ({Math.round((1 - savings.after / savings.before) * 100)}% menos).
           </strong>
         )}

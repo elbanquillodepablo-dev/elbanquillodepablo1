@@ -51,7 +51,7 @@ export default function SettingsPage() {
   return (
     <>
       <AdminTitle title="Ajustes" />
-      <form onSubmit={onSubmit} className="max-w-2xl space-y-4 rounded-2xl bg-white p-5 ring-1 ring-ink/10 sm:p-6">
+      <form onSubmit={onSubmit} className="max-w-2xl space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-line sm:p-6">
         {FIELDS.map(({ key, label, hint, textarea }) => (
           <label key={key} className="field">{label}
             {textarea ? (

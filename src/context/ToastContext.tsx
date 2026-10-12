@@ -25,7 +25,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={t.id}
             className={cn(
               'pointer-events-auto flex animate-fade-up items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold shadow-xl',
-              t.kind === 'success' ? 'bg-ink text-chalk' : 'bg-card text-white',
+              t.kind === 'success' ? 'bg-surface-2 text-fg ring-1 ring-line' : 'bg-card text-white',
             )}
           >
             {t.kind === 'success' ? <CheckCircle2 className="size-4 text-volt" /> : <AlertTriangle className="size-4" />}

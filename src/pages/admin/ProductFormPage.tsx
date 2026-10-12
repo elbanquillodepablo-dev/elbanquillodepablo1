@@ -74,7 +74,7 @@ export default function ProductFormPage() {
     try {
       if (isNew) {
         const created = await createProduct(payload);
-        toast('Producto creado. Ahora sube las fotos 📸');
+        toast('Producto creado. Ahora sube las fotos.');
         navigate(`/admin/productos/${created.id}`, { replace: true });
       } else {
         await updateProduct(id!, payload);
@@ -96,7 +96,7 @@ export default function ProductFormPage() {
 
   return (
     <>
-      <Link to="/admin/productos" className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-mute hover:text-ink">
+      <Link to="/admin/productos" className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-mute hover:text-fg">
         <ChevronLeft className="size-4" /> Productos
       </Link>
       <AdminTitle title={isNew ? 'Nuevo producto' : 'Editar producto'}>
@@ -108,7 +108,7 @@ export default function ProductFormPage() {
       </AdminTitle>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
-        <form onSubmit={onSubmit} className="space-y-6 rounded-2xl bg-white p-5 ring-1 ring-ink/10 sm:p-6">
+        <form onSubmit={onSubmit} className="space-y-6 rounded-2xl bg-surface p-5 ring-1 ring-line sm:p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="field">Equipo *
               <input className="input" required value={form.team} onChange={(e) => set('team', e.target.value)} placeholder="Real Madrid" />
@@ -153,7 +153,7 @@ export default function ProductFormPage() {
             <div className="flex flex-wrap gap-2">
               {Array.from(new Set([...sizeOptions, ...form.sizes])).map((s) => (
                 <button key={s} type="button" onClick={() => toggleSize(s)} aria-pressed={form.sizes.includes(s)}
-                  className={cn('h-10 min-w-12 rounded-lg px-3 text-sm font-bold ring-1', form.sizes.includes(s) ? 'bg-ink text-volt ring-ink' : 'ring-ink/15')}>
+                  className={cn('h-10 min-w-12 rounded-lg px-3 text-sm font-bold ring-1', form.sizes.includes(s) ? 'bg-volt text-fg ring-volt' : 'ring-line')}>
                   {s}
                 </button>
               ))}
@@ -174,8 +174,8 @@ export default function ProductFormPage() {
           </button>
         </form>
 
-        <section className="h-fit rounded-2xl bg-white p-5 ring-1 ring-ink/10 sm:p-6">
-          <h2 className="mb-4 text-2xl font-extrabold uppercase">Fotos</h2>
+        <section className="h-fit rounded-2xl bg-surface p-5 ring-1 ring-line sm:p-6">
+          <h2 className="mb-4 text-2xl font-bold tracking-tight">Fotos</h2>
           {product ? (
             <ImageManager productId={product.id} productName={product.name} images={product.images}
               onChange={() => { refetch(); qc.invalidateQueries({ queryKey: qk.products }); }} />
@@ -203,7 +203,7 @@ function Select<T extends string>({ label, value, options, onChange }: {
 function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="flex cursor-pointer items-center gap-2 text-sm font-bold">
-      <input type="checkbox" className="size-5 accent-pitch" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" className="size-5 accent-volt" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       {label}
     </label>
   );
