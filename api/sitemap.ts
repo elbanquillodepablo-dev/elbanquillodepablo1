@@ -1,7 +1,5 @@
 import { siteOrigin, supabaseGet } from './_shared.ts';
 
-export const config = { runtime: 'edge' };
-
 interface Row { slug: string; updated_at?: string }
 
 /** /sitemap.xml dinámico: inicio, tienda, categorías, productos activos y páginas legales. */

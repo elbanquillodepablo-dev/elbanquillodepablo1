@@ -1,7 +1,5 @@
 import { escapeHtml, publicImage, safeJson, siteOrigin, supabaseGet } from './_shared.ts';
 
-export const config = { runtime: 'edge' };
-
 interface ProductRow {
   name: string;
   slug: string;

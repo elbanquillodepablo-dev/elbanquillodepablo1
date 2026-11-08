@@ -1,7 +1,5 @@
 import { siteOrigin } from './_shared.ts';
 
-export const config = { runtime: 'edge' };
-
 /** /robots.txt con la URL del sitemap según el dominio real (vercel.app o propio). */
 export default function handler(req: Request): Response {
   const body = [
