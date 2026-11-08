@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  NPM_FLAGS = "--include=dev --ignore-scripts=false"
 
 # Edge Functions (netlify/edge-functions): /sitemap.xml, /robots.txt y /producto/*
 # se declaran con `export const config = { path }` en cada archivo.
@@ -23,7 +24,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
     Cross-Origin-Opener-Policy = "same-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://uymvinfxlwqzzwyditsv.supabase.co; connect-src 'self' https://uymvinfxlwqzzwyditsv.supabase.co wss://uymvinfxlwqzzwyditsv.supabase.co; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
 
 [[headers]]
   for = "/assets/*"
