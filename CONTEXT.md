@@ -6,7 +6,7 @@
 
 ---
 
-## 1. Qué es
+## 1. Qué es?
 
 Tienda online de **camisetas de fútbol** (clubes, selecciones, retro) para Colombia.
 - El **cliente** navega el catálogo, guarda favoritos, arma un carrito y envía su pedido. El pedido **se guarda en la base de datos** y **se abre WhatsApp** con el resumen para cerrar la venta (pago y envío se confirman por chat, no hay cobro en línea).
