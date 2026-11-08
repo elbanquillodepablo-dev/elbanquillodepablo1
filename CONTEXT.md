@@ -2,7 +2,7 @@
 
 > **Documento maestro del proyecto.** Si abres este repo en otro computador, con otra persona o con otra IA, empieza por aquí: explica qué es, cómo está hecho, cómo funciona, qué falta y cómo se opera.
 >
-> Última actualización: **2026-11-08**
+> Última actualización: **2026-10-12**
 
 ---
 
@@ -64,7 +64,7 @@ Futbolero sin exagerar: "Banquillo vacío", "Fuera de juego" (404), "¡Golazo!" 
 | Datos/caché | **TanStack Query 5** (caché, reintentos, invalidación) |
 | Backend | **Supabase**: Postgres + Auth + Storage + RLS |
 | Iconos | lucide-react |
-| Deploy | **Vercel** (`vercel.json` + funciones en `api/`). Netlify sigue configurado como alternativa (`netlify.toml` + Edge Functions). |
+| Deploy | **Netlify** (`netlify.toml` + Edge Functions en `netlify/edge-functions/`). También está listo para Vercel (`vercel.json`). |
 
 ### Supabase
 | Dato | Valor |
@@ -94,9 +94,8 @@ src/
     ├── store/            # Inicio, Tienda, Producto, Favoritos, Checkout, 404
     └── admin/            # Login, Layout+guard, Resumen, Productos, Formulario, Crear equipaciones, Categorías, Pedidos, Ajustes
 supabase/
-├── migrations/0001_init.sql   # Esquema inicial, RLS, Storage y create_order
-├── migrations/0002_admin_privacy_ratelimit.sql # Admin, privacidad y anti-spam
-└── seed.sql                   # Datos iniciales opcionales
+├── migrations/0001_init.sql   # Esquema completo (aplicado)
+└── seed.sql                   # Datos iniciales (aplicado)
 ```
 
 **Principios aplicados**
@@ -244,7 +243,7 @@ npm run typecheck
 npm run build                # genera dist/
 ```
 
-### Deploy en Netlify (alternativa)
+### Deploy en Netlify (principal)
 1. Netlify → **Add new site → Import an existing project → GitHub** → `elbanquillodepablo-dev/elbanquillodepablo1`.
 2. Build y publish salen de `netlify.toml` (`npm run build` → `dist`, Node 22).
 3. **Site configuration → Environment variables** (antes de desplegar, porque Vite las incrusta al compilar):
@@ -262,44 +261,26 @@ Qué hace la configuración de Netlify:
 - Edge Functions (`netlify/edge-functions/`): `/sitemap.xml`, `/robots.txt` y `/producto/*`, con la vista previa del producto en el HTML para WhatsApp y Google. Reutilizan los handlers estándar de `api/` (Request → Response); `api/_shared.ts#env()` lee variables en Netlify (Deno) y en Node.
 - Cabeceras de seguridad (CSP, HSTS…) y caché inmutable de `/assets/*`: las mismas que en Vercel.
 
-> **Build:** `npm run build` ejecuta `typecheck` (app + `vite.config.ts` con `tsconfig.node.json` + `api/`) y luego `vite build`. Node.js 22 recomendado.
+> **Build:** `npm run build` ejecuta `typecheck` (app + `vite.config.ts` con `tsconfig.node.json` + `api/`) y luego `vite build`. El error `Cannot find module 'node:url'` se resolvió con `@types/node` y un tsconfig separado para `vite.config.ts`.
 
-### Deploy en Vercel
-1. En Vercel, selecciona **Add New → Project → Import** y conecta `elbanquillodepablo-dev/elbanquillodepablo1` (rama `main`). El push a `main` genera un deployment de producción automáticamente cuando la integración está conectada.
-2. Framework preset: **Vite**; Root Directory: `.`. La configuración de `vercel.json` define build, salida, rutas de SPA y cabeceras.
-3. Configura estas variables en Vercel → **Settings → Environment Variables** para **Production**, **Preview** y **Development**:
+### Deploy en Vercel (alternativo)
+1. vercel.com → **Add New → Project → Import** `elbanquillodepablo-dev/elbanquillodepablo1`.
+2. Framework: **Vite** (lo detecta solo; `vercel.json` ya trae build, rutas y cabeceras).
+3. **Environment Variables** (Production + Preview):
    | Variable | Valor |
    |---|---|
    | `VITE_SUPABASE_URL` | `https://uymvinfxlwqzzwyditsv.supabase.co` |
    | `VITE_SUPABASE_PUBLISHABLE_KEY` | la *publishable key* (`sb_publishable_…`) |
-   | `VITE_SITE_URL` | URL de producción, por ejemplo `https://elbanquillodepablo.vercel.app` (opcional para Preview; si falta, se usa el dominio de la solicitud) |
-4. Pulsa **Deploy**. Los valores `VITE_*` se incorporan al bundle durante el build, así que cualquier cambio requiere un nuevo deployment.
-5. En Supabase → **Authentication → URL Configuration**, establece **Site URL** con el dominio de producción y añade como **Redirect URL** el mismo dominio y los dominios de preview que vayas a usar (por ejemplo `https://*.vercel.app/**`).
-6. Si cambias de proyecto Supabase, no cambies el código: actualiza `VITE_SUPABASE_URL` y la CSP de `vercel.json` admite subdominios `*.supabase.co`. Redeploy después del cambio.
-7. Para Google Search Console, verifica el dominio y envía `https://TU-DOMINIO/sitemap.xml`.
-
-### Preparar Supabase desde cero
-1. Crea o abre el proyecto de Supabase. En **Project Settings → API Keys**, copia **Project URL** y la **publishable key** (`sb_publishable_…`). La clave publishable puede estar en el frontend; nunca pongas una `secret` o `service_role` en variables `VITE_*` ni en el navegador.
-2. En **SQL Editor**, ejecuta en orden el contenido completo de `supabase/migrations/0001_init.sql` y luego `supabase/migrations/0002_admin_privacy_ratelimit.sql`. Si usas Supabase CLI, aplica las migraciones con `supabase db push` después de vincular el proyecto.
-3. Para contenido de ejemplo, ejecuta `supabase/seed.sql` una sola vez. Puedes omitirlo y cargar productos desde el panel.
-4. En Vercel agrega `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` en los entornos que correspondan. No hace falta configurar una `service_role` para esta aplicación: las operaciones se protegen con RLS y `create_order`.
-5. En **Authentication → Users**, crea/invita la cuenta `elbanquillodepablo@gmail.com` (el correo administrador definido en la migración 0002). El trigger la añade a `public.admins` al crearla; si ya existía, la migración también la agrega. Confirma que aparezca en `public.admins` antes de entrar a `/admin/login`.
-6. La migración crea el bucket público `products` y políticas para que solo un administrador cargue/edite imágenes. Comprueba en **Storage → Buckets** que exista `products`.
-7. Verifica en **Table Editor** que haya una fila en `store_settings`; el seed crea cuatro categorías y tres productos de ejemplo. Productos/categorías de ejemplo quedan activos y visibles.
-
-### Verificación después del despliegue
-- Abre `/`, `/tienda` y una URL profunda como `/admin/login`; deben cargar sin error 404.
-- Abre `/sitemap.xml` y `/robots.txt`; deben devolver XML y texto con el dominio del sitio.
-- Consulta el catálogo; si no carga, revisa que aplicaste ambas migraciones, que la URL y publishable key sean correctas y que las políticas RLS estén creadas.
-- Inicia sesión en `/admin/login`; crea/edita un producto y sube una imagen para comprobar Auth, RLS y Storage.
-- Envía un pedido de prueba aceptando la política de privacidad. Debe aparecer en `public.orders` con precio calculado por el servidor.
-- Revisa Vercel → **Deployments → Functions/Logs** si fallan sitemap o metadatos de producto. Esos handlers requieren las dos variables de Supabase.
+   | `VITE_SITE_URL` | la URL final, ej. `https://elbanquillodepablo.vercel.app` o tu dominio |
+4. **Deploy**. Luego en Supabase → *Authentication → URL Configuration* pon esa URL como *Site URL*.
+5. **Google Search Console**: agrega la propiedad (URL), verifica y envía `https://TU-DOMINIO/sitemap.xml`.
+6. Si cambias de dominio: actualiza `VITE_SITE_URL` y vuelve a desplegar.
 
 ### Qué hace `vercel.json` / `api/`
 - SPA: cualquier ruta sirve `index.html`.
 - `/producto/:slug` → `api/product-meta.ts`: devuelve el HTML con título, descripción, foto, precio y JSON-LD del producto, para que **WhatsApp, Facebook y Google** muestren la vista previa correcta sin ejecutar JS.
 - `/sitemap.xml` y `/robots.txt` dinámicos (`api/sitemap.ts`, `api/robots.ts`).
-- Cabeceras de seguridad: HSTS, CSP (solo este sitio, Google Fonts y subdominios `*.supabase.co`), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` y `Permissions-Policy`.
+- Cabeceras de seguridad: HSTS, CSP estricta (solo este sitio, Google Fonts y el proyecto Supabase), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` y `Permissions-Policy`. ⚠️ Si cambias de proyecto Supabase, actualiza el dominio en la CSP.
 - Caché de 1 año para `/assets/*`.
 
 ### Imágenes de marca

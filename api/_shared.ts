@@ -18,10 +18,8 @@ export function siteOrigin(req: Request): string {
 }
 
 export async function supabaseGet<T>(pathAndQuery: string): Promise<T> {
-  const url = env('VITE_SUPABASE_URL');
   const key = env('VITE_SUPABASE_PUBLISHABLE_KEY');
-  if (!url || !key) throw new Error('Faltan VITE_SUPABASE_URL o VITE_SUPABASE_PUBLISHABLE_KEY');
-  const res = await fetch(`${url}/rest/v1/${pathAndQuery}`, {
+  const res = await fetch(`${env('VITE_SUPABASE_URL')}/rest/v1/${pathAndQuery}`, {
     headers: { apikey: key, Authorization: `Bearer ${key}` },
   });
   if (!res.ok) throw new Error(`Supabase ${res.status}`);
