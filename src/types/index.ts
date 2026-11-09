@@ -144,6 +144,10 @@ export interface CustomerInput {
 }
 
 export interface StoreSettings {
+  reservation_schedule_enabled: boolean;
+  business_days: number[];
+  opens_at: string;
+  closes_at: string;
   id: number;
   store_name: string;
   whatsapp_number: string;

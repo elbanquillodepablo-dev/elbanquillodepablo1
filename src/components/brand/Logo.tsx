@@ -32,12 +32,12 @@ export function LogoMark({ className }: { className?: string }) {
 
 export function Logo({ className, compact = false }: { className?: string; compact?: boolean }) {
   return (
-    <span className={cn('inline-flex items-center gap-2.5', className)}>
-      <LogoMark className="size-10 shrink-0" />
+    <span className={cn('inline-flex items-center gap-3', className)}>
+      <LogoMark className="size-11 shrink-0" />
       {!compact && (
-        <span className="flex flex-col leading-[0.82]" aria-hidden="true">
-          <span className="font-brand text-[21px] font-black uppercase tracking-tight text-fg">El Banquillo</span>
-          <span className="font-brand text-[12px] font-extrabold uppercase tracking-[0.34em] text-volt">de Pablo</span>
+        <span className="flex flex-col gap-1 leading-none" aria-hidden="true">
+          <span className="font-brand text-[24px] font-black uppercase tracking-[-0.015em] text-fg">El Banquillo</span>
+          <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.28em] text-volt">de Pablo</span>
         </span>
       )}
     </span>

@@ -30,7 +30,7 @@ export default function HomePage() {
         <div className="container-page grid items-center gap-12 pb-16 pt-10 md:pt-16 lg:grid-cols-[1.05fr_1fr] lg:pb-24">
           <div className="animate-fade-up space-y-7">
             <p className="eyebrow">Temporada 2026/27</p>
-            <h1 className="max-w-[12ch] text-[clamp(2.75rem,7vw,5.75rem)] font-extrabold leading-[0.92] tracking-[-0.05em]">
+            <h1 className="max-w-[12ch] text-[clamp(2.75rem,7vw,5.75rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">
               {settings?.hero_title ?? 'Vístete de titular'}<span className="text-volt">.</span>
             </h1>
             <p className="max-w-[46ch] text-lg leading-relaxed text-mute">

@@ -27,7 +27,7 @@ export default function CartTicketsPage() {
 
   return <>
     <AdminTitle title="Tickets de WhatsApp" />
-    <p className="-mt-5 mb-6 max-w-2xl text-sm leading-relaxed text-mute">Cada ticket retiene sus unidades durante dos horas desde que se creó. Solo al confirmar la venta se descuentan definitivamente; cancelar o dejar vencer libera la reserva.</p>
+    <p className="-mt-5 mb-6 max-w-2xl text-sm leading-relaxed text-mute">Cada ticket retiene sus unidades hasta el vencimiento indicado según el horario de atención. Solo al confirmar la venta se descuentan definitivamente; cancelar o dejar vencer libera la reserva.</p>
     {isLoading ? <Spinner /> : error ? <p role="alert" className="rounded-xl bg-card/10 p-4 text-sm text-card">{errorMessage(error)}</p> : tickets.length === 0 ? <div className="rounded-2xl bg-surface p-8 text-center ring-1 ring-line"><TicketCheck className="mx-auto mb-3 size-9 text-volt"/><p className="font-bold">Todavía no hay consultas.</p><p className="mt-1 text-sm text-mute">Los carritos enviados por WhatsApp aparecerán aquí.</p></div> : <div className="space-y-4">
       {tickets.map((ticket) => {
         const expired = ticket.status === 'pending' && Date.parse(ticket.expires_at) <= Date.now();

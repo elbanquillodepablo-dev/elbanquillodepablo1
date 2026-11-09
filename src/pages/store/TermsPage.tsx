@@ -15,7 +15,7 @@ export default function TermsPage() {
       <Section title="Cómo comprar de forma segura">
         <ol className="list-decimal space-y-1 pl-5">
           <li>Elige tu camiseta, talla y personalización, y agrégala al carrito.</li>
-          <li>El carrito reserva las cantidades disponibles por dos horas desde el último cambio. Si vence, las unidades vuelven al inventario.</li>
+          <li>El carrito reserva las cantidades disponibles por dos horas durante la atención; fuera del horario configurado, hasta la próxima apertura más dos horas. Si vence, las unidades vuelven al inventario.</li>
           <li>Escribe tu nombre y crea un ticket con código. El sitio prepara un mensaje de WhatsApp para que tú decidas si lo envías.</li>
           <li>El ticket es una consulta, no una compra pagada. El equipo confirma la venta, el envío y el medio de pago contigo por WhatsApp.</li>
           <li>Solo después de confirmar todo realizas el pago por el medio acordado.</li>

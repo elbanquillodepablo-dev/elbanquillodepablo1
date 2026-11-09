@@ -23,7 +23,7 @@ export default function PrivacyPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>Nombre que escribes al solicitar atención por WhatsApp. En esta página no solicitamos cédula, teléfono ni dirección.</li>
           <li>Productos, tallas, cantidades, personalización y precio cotizado de tu carrito.</li>
-          <li>El carrito se reserva en la base de datos con un identificador aleatorio protegido y se libera tras dos horas sin cambios. Los favoritos se guardan en tu navegador.</li>
+          <li>El carrito se reserva en la base de datos con un identificador aleatorio protegido y se libera al alcanzar su vencimiento. Los favoritos se guardan en tu navegador.</li>
         </ul>
         <p>No pedimos ni almacenamos datos de tarjetas, contraseñas ni información bancaria en este sitio.</p>
       </Section>

@@ -60,7 +60,7 @@ export default function PromotionsPage() {
 
   return <>
     <AdminTitle title="Promociones" />
-    <p className="-mt-5 mb-6 max-w-2xl text-sm leading-relaxed text-mute">Crea descuentos porcentuales para productos seleccionados. Se activan y terminan en las fechas indicadas; si coinciden varias, se aplica la de mayor descuento. El precio queda reservado por dos horas al agregar al carrito.</p>
+    <p className="-mt-5 mb-6 max-w-2xl text-sm leading-relaxed text-mute">Crea descuentos porcentuales para productos seleccionados. Se activan y terminan en las fechas indicadas; si coinciden varias, se aplica la de mayor descuento. El precio del ticket se conserva hasta su vencimiento.</p>
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,.9fr)]">
       <form onSubmit={submit} className="space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-line">
         <div className="flex items-center justify-between gap-3"><h2 className="text-xl font-extrabold">{editingId ? 'Editar promoción' : 'Nueva promoción'}</h2>{editingId && <button type="button" className="btn-ghost" onClick={() => { setEditingId(null); setForm(blank()); }}>Cancelar edición</button>}</div>

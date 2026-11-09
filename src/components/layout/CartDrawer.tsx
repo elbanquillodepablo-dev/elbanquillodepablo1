@@ -32,7 +32,7 @@ export function CartDrawer() {
           </button>
         </header>
 
-        {expiredNotice && <p role="status" className="mx-5 mt-4 rounded-xl bg-card/10 p-3 text-xs font-semibold text-card">Tu carrito venció tras dos horas sin cambios. Las unidades quedaron disponibles de nuevo.</p>}
+        {expiredNotice && <p role="status" className="mx-5 mt-4 rounded-xl bg-card/10 p-3 text-xs font-semibold text-card">Tu carrito venció al alcanzar su vencimiento. Las unidades quedaron disponibles de nuevo.</p>}
 
         {items.length === 0 && isSyncing ? (
           <div className="grid flex-1 place-items-center p-5 text-center"><div className="space-y-3"><div className="mx-auto size-7 animate-spin rounded-full border-2 border-line border-t-volt"/><p className="font-bold">Reservando las unidades…</p><p className="text-sm text-mute">Revisamos que las tallas sigan disponibles.</p></div></div>
@@ -77,7 +77,7 @@ export function CartDrawer() {
                 <span className="text-sm font-semibold text-mute">Subtotal</span>
                 <span className="text-2xl font-black">{formatPrice(subtotal)}</span>
               </div>
-              {expiresAt && <p className="text-xs leading-relaxed text-mute">Tu reserva vence a las {new Date(expiresAt).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' }).replace('.', '')}. Cada cambio reinicia el plazo; al pasar dos horas sin actividad, se vacía el carrito y se liberan las unidades.</p>}
+              {expiresAt && <p className="text-xs leading-relaxed text-mute">Tu reserva vence a las {new Date(expiresAt).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' }).replace('.', '')}. Cada cambio reinicia el plazo; al llegar el vencimiento indicado, se vacía el carrito y se liberan las unidades.</p>}
               <p className="text-xs text-mute">{isSyncing ? 'Guardando la reserva…' : 'El envío se confirma por WhatsApp según tu ciudad.'}</p>
               <Link to="/checkout" onClick={(e) => { if (isSyncing) e.preventDefault(); else close(); }} aria-disabled={isSyncing} className={`btn-volt w-full ${isSyncing ? 'pointer-events-none opacity-50' : ''}`}>Continuar por WhatsApp</Link>
             </footer>

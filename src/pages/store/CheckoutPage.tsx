@@ -73,7 +73,7 @@ export default function CheckoutPage() {
         </button>
         <ul className="space-y-2 text-xs leading-relaxed text-mute">
           <li className="flex gap-2"><Lock className="size-4 shrink-0 text-volt"/>Conexión cifrada. No te pedimos tarjetas ni contraseñas.</li>
-          <li className="flex gap-2"><ShieldCheck className="size-4 shrink-0 text-volt"/>El inventario se reserva por dos horas; la venta solo queda confirmada cuando la administra el equipo.</li>
+          <li className="flex gap-2"><ShieldCheck className="size-4 shrink-0 text-volt"/>El inventario se reserva hasta el vencimiento indicado; la venta solo queda confirmada cuando la administra el equipo.</li>
         </ul>
       </form>
       <aside className="h-fit space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-line lg:sticky lg:top-28">

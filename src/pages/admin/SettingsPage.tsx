@@ -16,7 +16,7 @@ const FIELDS: Field[] = [
   { key: 'hero_title', label: 'Título del inicio' },
   { key: 'hero_subtitle', label: 'Subtítulo del inicio', textarea: true },
   { key: 'shipping_note', label: 'Nota de envíos', textarea: true },
-  { key: 'hours', label: 'Horario' },
+  { key: 'hours', label: 'Horario visible en la tienda', hint: 'Opcional. Déjalo vacío para ocultarlo. Este texto no cambia el vencimiento de las reservas.' },
   { key: 'city', label: 'Ciudad / ubicación' },
   { key: 'instagram_url', label: 'Instagram (URL)' },
   { key: 'tiktok_url', label: 'TikTok (URL)' },
@@ -52,6 +52,14 @@ export default function SettingsPage() {
     <>
       <AdminTitle title="Ajustes" />
       <form onSubmit={onSubmit} className="max-w-2xl space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-line sm:p-6">
+        <fieldset className="space-y-4 border-b border-line pb-6 mb-6">
+          <legend className="mb-3 text-xl font-semibold">Horario y reservas</legend>
+          <label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={form.reservation_schedule_enabled ?? false} onChange={(e) => setForm({ ...form, reservation_schedule_enabled: e.target.checked })} />Usar horario de atención para las reservas</label>
+          <p className="text-sm text-mute">Durante la atención: dos horas desde el último cambio. Fuera de horario: hasta la próxima apertura más dos horas. Zona horaria: Colombia.</p>
+          <div className="flex flex-wrap gap-3">{['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].map((day, i) => <label key={day} className="flex min-h-11 items-center gap-2 rounded-lg bg-surface-2 px-3 text-sm"><input type="checkbox" checked={(form.business_days ?? []).includes(i)} onChange={(e) => setForm({ ...form, business_days: e.target.checked ? [...(form.business_days ?? []), i] : (form.business_days ?? []).filter((d) => d !== i) })} />{day}</label>)}</div>
+          <div className="grid grid-cols-2 gap-4"><label className="field">Apertura<input required type="time" className="input" value={form.opens_at?.slice(0,5) ?? '09:00'} onChange={(e) => setForm({ ...form, opens_at: e.target.value })} /></label><label className="field">Cierre<input required type="time" className="input" value={form.closes_at?.slice(0,5) ?? '19:00'} onChange={(e) => setForm({ ...form, closes_at: e.target.value })} /></label></div>
+          <p className="text-xs text-mute">El cierre debe ser posterior a la apertura, dentro del mismo día. Los cambios de horario se aplican a las reservas nuevas o modificadas.</p>
+        </fieldset>
         {FIELDS.map(({ key, label, hint, textarea }) => (
           <label key={key} className="field">{label}
             {textarea ? (

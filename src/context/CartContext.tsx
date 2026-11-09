@@ -97,7 +97,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setItems([]);
       setExpiresAt(null);
       setExpiredNotice(true);
-      toast('Pasaron dos horas sin cambios: se vació el carrito y se liberaron las unidades.', 'error');
+      toast('Tu reserva venció: se vació el carrito y se liberaron las unidades.', 'error');
     }, delay);
     return () => window.clearTimeout(timer);
   }, [expiresAt, items.length, setItems, toast]);

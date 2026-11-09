@@ -54,3 +54,9 @@ sequenceDiagram
 
 - Cuenta obligatoria para clientes, pagos en línea, automatización de WhatsApp o publicación en redes.
 - Tarifas de personalización de camisetas; se siguen confirmando por WhatsApp como hoy.
+
+## Horarios y refinamiento visual (2026-11-09)
+
+El administrador puede configurar días y una franja diaria de atención en Ajustes. Durante la atención las reservas duran dos horas; fuera del horario configurado vencen dos horas después de la siguiente apertura. La regla está desactivada hasta que el administrador confirme el horario real. Las reservas existentes conservan su vencimiento hasta que se modifiquen. Horario visible opcional e independiente. Migración business_reservations aplicada.
+
+Se refinó la legibilidad del logo, la tipografía del inicio, el ritmo de texto y el movimiento reducido. El pie incluye Creado por Zenubit. Compilación y detector Impeccable correctos; revisión visual en navegador pendiente.

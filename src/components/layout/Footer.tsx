@@ -43,6 +43,7 @@ export function Footer() {
       <div className="border-t border-line">
         <div className="container-page flex flex-col gap-2 py-6 text-xs text-mute sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} El Banquillo de Pablo · Precios en pesos colombianos</p>
+          <a href="https://zenubit.com" target="_blank" rel="noopener noreferrer" className="w-fit underline-offset-4 transition-colors hover:text-volt hover:underline">Creado por <span className="font-semibold text-fg">Zenubit</span></a>
           <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Legal">
             <Link to="/terminos" className="hover:text-fg">Términos y compra segura</Link>
             <Link to="/privacidad" className="hover:text-fg">Tratamiento de datos</Link>

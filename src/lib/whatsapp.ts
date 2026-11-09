@@ -42,6 +42,6 @@ export function cartTicketMessage(
   return [
     `¡Hola! Soy ${customerName} y quiero continuar con mi carrito ${code}.`,
     '', ...lines, '', `*Total cotizado:* ${formatPrice(total)}`,
-    'La reserva se mantiene por dos horas desde la última actividad.',
+    'La reserva se mantiene hasta el vencimiento indicado en la tienda.',
   ].join('\n');
 }
