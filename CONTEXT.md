@@ -4,7 +4,7 @@
 >
 > Última actualización: **2026-11-09**
 >
-> Cambios preparados para inventario, reservas, roles y promociones: [docs/PRD.md](docs/PRD.md). La migración aún no se ha aplicado a producción.
+> Inventario, reservas, roles y promociones están implementados: [docs/PRD.md](docs/PRD.md). Migraciones aplicadas a Supabase el 2026-11-09; el commit `c6e0daa` fue desplegado por Vercel.
 
 ---
 
@@ -99,7 +99,8 @@ src/
 supabase/
 ├── migrations/0001_init.sql   # Esquema inicial, RLS, Storage y create_order
 ├── migrations/0002_admin_privacy_ratelimit.sql # Admin, privacidad y anti-spam
-├── migrations/0003_inventory_carts_staff_promotions.sql # Preparada; aún no aplicada a producción
+├── migrations/0003_inventory_carts_staff_promotions.sql # Inventario, reservas, tickets, roles y descuentos
+├── migrations/20261109174813_restrict_staff_functions_and_index_foreign_keys.sql # Permisos e índices adicionales
 └── seed.sql                   # Datos iniciales opcionales
 ```
 
@@ -209,13 +210,13 @@ En la tienda (`ProductImage.tsx`): `srcset` (640w/1600w) + `sizes`, `loading="la
 ## 8. Manual del administrador 📋
 
 ### Cuenta admin
-- Correo admin: **elbanquillodepablo@gmail.com** (está en `admin_emails`; al crearse queda como admin solo).
+- Correo admin inicial: **elbanquillodepablo@gmail.com** (está en `admin_emails`; al aceptar invitación queda como admin).
 - Entrada: **`https://TU-DOMINIO/admin/login`**.
 - WhatsApp oficial configurado: **+57 320 571 6302** (`573205716302`).
 
 ### Primer acceso (una sola vez)
-1. Supabase → **Authentication → Users → Add user → Create new user** → correo `elbanquillodepablo@gmail.com`, una contraseña **fuerte** (12+ caracteres, con símbolos) y marca **Auto Confirm User**.
-2. Listo: el trigger la vuelve admin automáticamente.
+1. Supabase → **Authentication → Users → Invite user** → `elbanquillodepablo@gmail.com`.
+2. La persona acepta el enlace y define su contraseña en Supabase. El trigger la vuelve admin automáticamente.
 3. **Authentication → Sign In / Providers → Email → desactiva "Allow new users to sign up"** para que nadie más pueda crear cuentas.
 4. **Authentication → URL Configuration** → *Site URL* = la URL de Vercel.
 5. Entra a `/admin/login`.
@@ -285,10 +286,10 @@ Qué hace la configuración de Netlify:
 
 ### Preparar Supabase desde cero
 1. Crea o abre el proyecto de Supabase. En **Project Settings → API Keys**, copia **Project URL** y la **publishable key** (`sb_publishable_…`). La clave publishable puede estar en el frontend; nunca pongas una `secret` o `service_role` en variables `VITE_*` ni en el navegador.
-2. En **SQL Editor**, ejecuta en orden las migraciones `0001`, `0002` y `0003`. La 0003 agrega inventario cero por talla, reservas/tickets, roles y descuentos. Para producción, confirma el correo del primer administrador antes de aplicar esa migración. Si usas Supabase CLI, aplica las migraciones con `supabase db push` después de vincular el proyecto correcto.
+2. La base de producción `uymvinfxlwqzzwyditsv` ya tiene las migraciones iniciales y de inventario/carritos/promociones aplicadas. Si preparas otro entorno, usa los archivos SQL versionados en orden y verifica siempre el proyecto seleccionado.
 3. Para contenido de ejemplo, ejecuta `supabase/seed.sql` una sola vez. Puedes omitirlo y cargar productos desde el panel.
-4. En Vercel agrega las dos variables públicas y `SUPABASE_SECRET_KEY` en **Production, Preview y Development** para usar invitaciones desde el panel. La clave privada no se comparte por chat ni se pone en el bundle.
-5. En **Authentication → Users**, invita el correo administrador confirmado. Debe estar previamente incluido en `public.admin_emails`; el trigger lo incorpora como administrador. El correo propietario exacto sigue pendiente de confirmar.
+4. `SUPABASE_SECRET_KEY` es necesaria para invitar y desactivar miembros desde el panel. El usuario indicó que ya la agregó en Vercel; esta sesión no pudo consultar las variables del proyecto porque no está conectada a la cuenta Vercel que lo contiene. Nunca ponerla en una variable `VITE_*` ni en el bundle.
+5. En **Authentication → Users → Invite user**, invita `elbanquillodepablo@gmail.com`. El correo ya está incluido en `public.admin_emails`; el trigger lo incorpora como administrador al aceptar la invitación.
 6. La migración crea el bucket público `products` y políticas para que solo un administrador cargue/edite imágenes. Comprueba en **Storage → Buckets** que exista `products`.
 7. Verifica en **Table Editor** que haya una fila en `store_settings`; el seed crea cuatro categorías y tres productos de ejemplo. Productos/categorías de ejemplo quedan activos y visibles.
 

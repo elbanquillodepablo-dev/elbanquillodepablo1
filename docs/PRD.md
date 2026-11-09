@@ -42,11 +42,11 @@ sequenceDiagram
 
 ## Estado actual
 
-- Código de estas funciones y la migración versionada `supabase/migrations/0003_inventory_carts_staff_promotions.sql` están preparados en el workspace.
+- Código de estas funciones está publicado en `main` (commit `c6e0daa`). GitHub reportó el despliegue Vercel como completado.
 - **Base de producción actualizada:** migraciones `20261109174615_inventory_carts_staff_promotions` y `20261109174813_restrict_staff_functions_and_index_foreign_keys` aplicadas al proyecto Supabase del negocio. Hay 15 variantes de talla creadas con inventario total en cero; faltan las cantidades reales.
-- **Pendiente para activar la experiencia nueva:** publicar el código actualizado en Vercel y confirmar allí `SUPABASE_SECRET_KEY` para las invitaciones. El conector Vercel disponible en esta sesión no lista el proyecto asociado al repositorio.
+- El usuario indica que agregó `SUPABASE_SECRET_KEY` en Vercel. No pudimos leer ni confirmar el valor desde la integración disponible, que está conectada a otra cuenta; no se intentó recuperar el secreto.
 - La única base del proyecto sigue siendo Supabase `uymvinfxlwqzzwyditsv` (`us-west-2`); ya tiene productos y categorías, pero no cantidades reales por talla.
-- Correo confirmado para el primer administrador: `elbanquillodepablo@gmail.com`; figura en `admin_emails`, pero aún no existe un usuario en `admins`. Invitar desde Supabase Auth tras desplegar el código; al aceptar, el trigger concede el rol inicial. No guardar contraseñas en el repositorio ni en documentación.
+- Correo confirmado para el primer administrador: `elbanquillodepablo@gmail.com`; figura en `admin_emails`, pero aún no existe un usuario en `admins`. Invitar desde Supabase Auth; al aceptar, el trigger concede el rol inicial. No guardar contraseñas en el repositorio ni en documentación.
 - Inicialmente los usuarios internos tienen dos roles: `admin` y `operario`. Cualquier admin activo puede invitar y desactivar ambos roles; la API evita desactivar al último admin activo.
 - Promociones se activan según sus fechas; no hay integración para publicar contenido en redes sociales.
 
