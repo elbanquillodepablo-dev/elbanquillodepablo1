@@ -10,7 +10,7 @@ export default function PrivacyPage() {
       title="Política de tratamiento de datos personales"
       description="Cómo El Banquillo de Pablo recoge, usa y protege tus datos personales conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013."
       path="/privacidad"
-      updated="12 de octubre de 2026"
+      updated="9 de noviembre de 2026"
     >
       <Section title="1. Responsable">
         <p>
@@ -21,20 +21,21 @@ export default function PrivacyPage() {
 
       <Section title="2. Qué datos recogemos">
         <ul className="list-disc space-y-1 pl-5">
-          <li>Nombre, cédula (opcional), celular, departamento, ciudad, dirección, barrio y referencia de entrega.</li>
-          <li>Productos, tallas y personalización de tu pedido.</li>
-          <li>Favoritos y carrito: se guardan <strong>solo en tu navegador</strong>, no en nuestros servidores.</li>
+          <li>Nombre que escribes al solicitar atención por WhatsApp. En esta página no solicitamos cédula, teléfono ni dirección.</li>
+          <li>Productos, tallas, cantidades, personalización y precio cotizado de tu carrito.</li>
+          <li>El carrito se reserva en la base de datos con un identificador aleatorio protegido y se libera tras dos horas sin cambios. Los favoritos se guardan en tu navegador.</li>
         </ul>
         <p>No pedimos ni almacenamos datos de tarjetas, contraseñas ni información bancaria en este sitio.</p>
       </Section>
 
       <Section title="3. Para qué los usamos">
         <ul className="list-disc space-y-1 pl-5">
-          <li>Confirmar disponibilidad, precio y medio de pago de tu pedido.</li>
+          <li>Registrar tu consulta y reconocer el ticket cuando nos escribas por WhatsApp.</li>
+          <li>Confirmar disponibilidad, precio final, medio de pago y envío si decides continuar con la compra.</li>
           <li>Coordinar el envío con la transportadora.</li>
           <li>Atender garantías, cambios y peticiones, quejas o reclamos.</li>
         </ul>
-        <p>No vendemos ni cedemos tus datos a terceros. Solo los compartimos con la transportadora en lo necesario para la entrega.</p>
+        <p>El sistema usa Supabase como proveedor de base de datos. Si compartes datos de entrega durante la conversación de WhatsApp, se usan para atenderte y, cuando corresponda, coordinar el envío con la transportadora.</p>
       </Section>
 
       <Section title="4. Tus derechos">
@@ -56,9 +57,9 @@ export default function PrivacyPage() {
 
       <Section title="6. Seguridad">
         <p>
-          El sitio funciona sobre conexión cifrada (HTTPS). Los pedidos se guardan en una base de datos con controles de acceso: solo el
-          administrador autenticado de la tienda puede consultarlos. Conservamos los datos mientras sean necesarios para la relación comercial
-          y las obligaciones legales.
+          El sitio funciona sobre conexión cifrada (HTTPS). Los tickets se guardan en una base de datos con acceso por roles: el administrador
+          y el personal operativo autorizado pueden consultar la información necesaria para atenderlos. Conservamos los tickets mientras sean
+          necesarios para la atención y las obligaciones legales.
         </p>
       </Section>
     </LegalLayout>

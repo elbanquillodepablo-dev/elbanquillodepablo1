@@ -28,3 +28,20 @@ export function orderMessage(code: string, items: CartItem[], customer: Customer
     `Tel: ${customer.phone}`,
   ].join('\n');
 }
+
+export function cartTicketMessage(
+  code: string,
+  customerName: string,
+  items: { name: string; size: string; quantity: number; unit_price: number; custom_name?: string | null; custom_number?: string | null }[],
+  total: number,
+): string {
+  const lines = items.map((item) => {
+    const custom = item.custom_name || item.custom_number ? ` · Personalizada: ${item.custom_name ?? ''} ${item.custom_number ?? ''}`.trimEnd() : '';
+    return `• ${item.quantity} × ${item.name} (talla ${item.size})${custom} — ${formatPrice(item.unit_price * item.quantity)}`;
+  });
+  return [
+    `¡Hola! Soy ${customerName} y quiero continuar con mi carrito ${code}.`,
+    '', ...lines, '', `*Total cotizado:* ${formatPrice(total)}`,
+    'La reserva se mantiene por dos horas desde la última actividad.',
+  ].join('\n');
+}

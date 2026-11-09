@@ -19,6 +19,24 @@ function sortImages(p: Product): Product {
   return { ...p, images: [...(p.images ?? [])].sort((a, b) => a.position - b.position) };
 }
 
+async function applyStorePrices(products: Product[]): Promise<Product[]> {
+  if (!products.length) return products;
+  const { data, error } = await supabase.rpc('get_store_prices', { p_product_ids: products.map((p) => p.id) });
+  if (error) throw error;
+  const prices = new Map(((data ?? []) as { product_id: string; price: number; original_price: number; promotion_title: string | null }[])
+    .map((row) => [row.product_id, row]));
+  return products.map((product) => {
+    const current = prices.get(product.id);
+    if (!current) return product;
+    return {
+      ...product,
+      price: current.price,
+      original_price: current.promotion_title ? current.original_price : null,
+      promotion_title: current.promotion_title,
+    };
+  });
+}
+
 export async function listProducts(filters: ProductFilters = {}): Promise<Product[]> {
   let query = supabase.from('products').select(SELECT);
 
@@ -49,18 +67,19 @@ export async function listProducts(filters: ProductFilters = {}): Promise<Produc
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data as Product[]).map(sortImages);
+  return applyStorePrices((data as Product[]).map(sortImages));
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase.from('products').select(SELECT).eq('slug', slug).maybeSingle();
   if (error) throw error;
-  return data ? sortImages(data as Product) : null;
+  return data ? (await applyStorePrices([sortImages(data as Product)]))[0] : null;
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
   const { data, error } = await supabase.from('products').select(SELECT).eq('id', id).maybeSingle();
   if (error) throw error;
+  // Admin forms need the base price, not a temporary promotional price.
   return data ? sortImages(data as Product) : null;
 }
 
@@ -68,7 +87,7 @@ export async function getProductsByIds(ids: string[]): Promise<Product[]> {
   if (!ids.length) return [];
   const { data, error } = await supabase.from('products').select(SELECT).in('id', ids).eq('is_active', true);
   if (error) throw error;
-  return (data as Product[]).map(sortImages);
+  return applyStorePrices((data as Product[]).map(sortImages));
 }
 
 export async function createProduct(input: ProductInput): Promise<Product> {

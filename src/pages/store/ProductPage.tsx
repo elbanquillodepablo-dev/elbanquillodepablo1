@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, Heart, MessageCircle, Ruler, ShoppingBag } from 'lucide-react';
 import { useProduct, useProducts, useSettings } from '@/hooks/queries';
 import { ProductImage } from '@/components/product/ProductImage';
@@ -14,6 +15,7 @@ import { publicImageUrl } from '@/lib/supabase';
 import { productInquiryMessage, whatsappLink } from '@/lib/whatsapp';
 import { absoluteUrl, SITE_NAME, useSeo } from '@/lib/seo';
 import type { Product } from '@/types';
+import { getInventoryAvailability } from '@/services/commerce';
 
 /** schema.org Product + BreadcrumbList para resultados enriquecidos en Google */
 function productJsonLd(p: Product) {
@@ -59,6 +61,11 @@ function productJsonLd(p: Product) {
 export default function ProductPage() {
   const { slug = '' } = useParams();
   const { data: product, isLoading } = useProduct(slug);
+  const { data: inventory = [], isLoading: inventoryLoading } = useQuery({
+    queryKey: ['inventory-availability', product?.id],
+    queryFn: () => getInventoryAvailability(product!.id),
+    enabled: !!product,
+  });
   const { data: settings } = useSettings();
   const related = useProducts({ search: product?.team });
   const cart = useCart();
@@ -103,12 +110,18 @@ export default function ProductPage() {
     );
   }
 
-  const off = discountPercent(product.price, product.compare_at_price);
+  const originalPrice = product.original_price ?? product.compare_at_price;
+  const off = discountPercent(product.price, originalPrice);
   const isFav = favs.has(product.id);
 
   const addToCart = () => {
     if (!size) {
       setSizeError(true);
+      return;
+    }
+    if ((inventory.find((item) => item.size === size)?.available ?? 0) < 1) {
+      setSizeError(true);
+      toast('Esa talla no tiene unidades disponibles en este momento.', 'error');
       return;
     }
     cart.add({
@@ -168,11 +181,12 @@ export default function ProductPage() {
               <span className="text-3xl font-extrabold">{formatPrice(product.price)}</span>
               {off && (
                 <>
-                  <span className="text-lg text-mute line-through">{formatPrice(product.compare_at_price!)}</span>
+                  <span className="text-lg text-mute line-through">{formatPrice(originalPrice!)}</span>
                   <span className="chip bg-card text-white">-{off}%</span>
                 </>
               )}
             </p>
+            {product.promotion_title && <p className="text-sm font-bold text-volt">{product.promotion_title}</p>}
           </div>
 
           {product.description && <p className="leading-relaxed text-fg/80">{product.description}</p>}
@@ -190,17 +204,20 @@ export default function ProductPage() {
                 <button
                   key={s}
                   type="button"
+                  disabled={inventoryLoading || (inventory.find((item) => item.size === s)?.available ?? 0) < 1}
                   onClick={() => { setSize(s); setSizeError(false); }}
                   aria-pressed={size === s}
                   className={cn(
                     'h-12 min-w-14 rounded-xl px-4 text-sm font-extrabold ring-1 transition',
                     size === s ? 'bg-volt text-fg ring-volt' : 'bg-surface ring-line hover:ring-line-strong',
+                    (inventoryLoading || (inventory.find((item) => item.size === s)?.available ?? 0) < 1) && 'cursor-not-allowed opacity-40 line-through',
                   )}
                 >
                   {s}
                 </button>
               ))}
             </div>
+            {size && <p className="mt-2 text-xs text-mute">Unidades disponibles para {size}: {inventory.find((item) => item.size === size)?.available ?? 0}</p>}
             {sizeError && <p className="mt-2 text-sm font-semibold text-card" role="alert">Elige una talla para continuar.</p>}
           </fieldset>
 

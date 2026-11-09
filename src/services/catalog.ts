@@ -58,6 +58,6 @@ export async function listOrders(status?: OrderStatus): Promise<Order[]> {
 }
 
 export async function updateOrderStatus(id: string, status: OrderStatus): Promise<void> {
-  const { error } = await supabase.from('orders').update({ status }).eq('id', id);
+  const { error } = await supabase.rpc('update_order_status', { p_order_id: id, p_status: status });
   if (error) throw error;
 }

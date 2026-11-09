@@ -10,7 +10,7 @@ Requiere Node.js 22.x y un proyecto de Supabase.
 npm install
 ```
 
-Crea `.env.local` a partir de `.env.example` y configura la URL y la publishable key de Supabase (`VITE_SITE_URL` es opcional en local). Luego ejecuta:
+Crea `.env.local` a partir de `.env.example` y configura la URL y la publishable key de Supabase (`VITE_SITE_URL` es opcional en local). Para probar invitaciones de personal, configura también `SUPABASE_SECRET_KEY` solo en el servidor; nunca la pongas en una variable `VITE_*`. Luego ejecuta:
 
 ```bash
 npm run dev

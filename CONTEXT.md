@@ -2,15 +2,18 @@
 
 > **Documento maestro del proyecto.** Si abres este repo en otro computador, con otra persona o con otra IA, empieza por aquí: explica qué es, cómo está hecho, cómo funciona, qué falta y cómo se opera.
 >
-> Última actualización: **2026-11-08**
+> Última actualización: **2026-11-09**
+>
+> Cambios preparados para inventario, reservas, roles y promociones: [docs/PRD.md](docs/PRD.md). La migración aún no se ha aplicado a producción.
 
 ---
 
 ## 1. Qué es?
 
 Tienda online de **camisetas de fútbol** (clubes, selecciones, retro) para Colombia.
-- El **cliente** navega el catálogo, guarda favoritos, arma un carrito y envía su pedido. El pedido **se guarda en la base de datos** y **se abre WhatsApp** con el resumen para cerrar la venta (pago y envío se confirman por chat, no hay cobro en línea).
-- El **administrador** entra a `/admin`, sube productos y fotos, crea equipaciones completas de un equipo en un clic (local, visitante, tercera…), gestiona categorías, pedidos y ajustes de la tienda.
+- El **cliente** navega el catálogo, guarda favoritos y reserva tallas sin cuenta. El carrito vence dos horas después del último cambio. Al continuar, queda un ticket con código y el navegador abre WhatsApp con un texto listo; el usuario lo envía y la venta se confirma por el panel, sin pagos en línea.
+- El **administrador** entra a `/admin`, gestiona productos/fotos/precios, inventario por talla, promociones, categorías, pedidos, tickets del carrito, personas del equipo y ajustes.
+- El **operario** puede ajustar existencias, revisar pedidos y cancelar tickets; no cambia precios ni confirma ventas.
 
 Referencia de inspiración: https://eltoldodeldeporte-tiendaoficial.netlify.app
 
@@ -96,6 +99,7 @@ src/
 supabase/
 ├── migrations/0001_init.sql   # Esquema inicial, RLS, Storage y create_order
 ├── migrations/0002_admin_privacy_ratelimit.sql # Admin, privacidad y anti-spam
+├── migrations/0003_inventory_carts_staff_promotions.sql # Preparada; aún no aplicada a producción
 └── seed.sql                   # Datos iniciales opcionales
 ```
 
@@ -273,6 +277,7 @@ Qué hace la configuración de Netlify:
    | `VITE_SUPABASE_URL` | `https://uymvinfxlwqzzwyditsv.supabase.co` |
    | `VITE_SUPABASE_PUBLISHABLE_KEY` | la *publishable key* (`sb_publishable_…`) |
    | `VITE_SITE_URL` | URL de producción, por ejemplo `https://elbanquillodepablo.vercel.app` (opcional para Preview; si falta, se usa el dominio de la solicitud) |
+   | `SUPABASE_SECRET_KEY` | Clave `sb_secret_…`, solo servidor, necesaria para invitar y desactivar miembros del equipo. No usar prefijo `VITE_`. |
 4. Pulsa **Deploy**. Los valores `VITE_*` se incorporan al bundle durante el build, así que cualquier cambio requiere un nuevo deployment.
 5. En Supabase → **Authentication → URL Configuration**, establece **Site URL** con el dominio de producción y añade como **Redirect URL** el mismo dominio y los dominios de preview que vayas a usar (por ejemplo `https://*.vercel.app/**`).
 6. Si cambias de proyecto Supabase, no cambies el código: actualiza `VITE_SUPABASE_URL` y la CSP de `vercel.json` admite subdominios `*.supabase.co`. Redeploy después del cambio.
@@ -280,17 +285,17 @@ Qué hace la configuración de Netlify:
 
 ### Preparar Supabase desde cero
 1. Crea o abre el proyecto de Supabase. En **Project Settings → API Keys**, copia **Project URL** y la **publishable key** (`sb_publishable_…`). La clave publishable puede estar en el frontend; nunca pongas una `secret` o `service_role` en variables `VITE_*` ni en el navegador.
-2. En **SQL Editor**, ejecuta en orden el contenido completo de `supabase/migrations/0001_init.sql` y luego `supabase/migrations/0002_admin_privacy_ratelimit.sql`. Si usas Supabase CLI, aplica las migraciones con `supabase db push` después de vincular el proyecto.
+2. En **SQL Editor**, ejecuta en orden las migraciones `0001`, `0002` y `0003`. La 0003 agrega inventario cero por talla, reservas/tickets, roles y descuentos. Para producción, confirma el correo del primer administrador antes de aplicar esa migración. Si usas Supabase CLI, aplica las migraciones con `supabase db push` después de vincular el proyecto correcto.
 3. Para contenido de ejemplo, ejecuta `supabase/seed.sql` una sola vez. Puedes omitirlo y cargar productos desde el panel.
-4. En Vercel agrega `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` en los entornos que correspondan. No hace falta configurar una `service_role` para esta aplicación: las operaciones se protegen con RLS y `create_order`.
-5. En **Authentication → Users**, crea/invita la cuenta `elbanquillodepablo@gmail.com` (el correo administrador definido en la migración 0002). El trigger la añade a `public.admins` al crearla; si ya existía, la migración también la agrega. Confirma que aparezca en `public.admins` antes de entrar a `/admin/login`.
+4. En Vercel agrega las dos variables públicas y `SUPABASE_SECRET_KEY` en **Production, Preview y Development** para usar invitaciones desde el panel. La clave privada no se comparte por chat ni se pone en el bundle.
+5. En **Authentication → Users**, invita el correo administrador confirmado. Debe estar previamente incluido en `public.admin_emails`; el trigger lo incorpora como administrador. El correo propietario exacto sigue pendiente de confirmar.
 6. La migración crea el bucket público `products` y políticas para que solo un administrador cargue/edite imágenes. Comprueba en **Storage → Buckets** que exista `products`.
 7. Verifica en **Table Editor** que haya una fila en `store_settings`; el seed crea cuatro categorías y tres productos de ejemplo. Productos/categorías de ejemplo quedan activos y visibles.
 
 ### Verificación después del despliegue
 - Abre `/`, `/tienda` y una URL profunda como `/admin/login`; deben cargar sin error 404.
 - Abre `/sitemap.xml` y `/robots.txt`; deben devolver XML y texto con el dominio del sitio.
-- Consulta el catálogo; si no carga, revisa que aplicaste ambas migraciones, que la URL y publishable key sean correctas y que las políticas RLS estén creadas.
+- Consulta el catálogo; si no carga, revisa que aplicaste las tres migraciones, que la URL y publishable key sean correctas y que las políticas RLS estén creadas.
 - Inicia sesión en `/admin/login`; crea/edita un producto y sube una imagen para comprobar Auth, RLS y Storage.
 - Envía un pedido de prueba aceptando la política de privacidad. Debe aparecer en `public.orders` con precio calculado por el servidor.
 - Revisa Vercel → **Deployments → Functions/Logs** si fallan sitemap o metadatos de producto. Esos handlers requieren las dos variables de Supabase.

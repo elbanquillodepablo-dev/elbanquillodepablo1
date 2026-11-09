@@ -1,35 +1,45 @@
 import { useState, type ReactNode } from 'react';
 import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ExternalLink, LayoutDashboard, LogOut, Menu, Package, Settings, Shirt, Tags, Layers, X } from 'lucide-react';
+import { ExternalLink, LayoutDashboard, LogOut, Menu, Package, Settings, Shirt, Tags, Layers, X, Warehouse, TicketCheck, BadgePercent, Users } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Logo } from '@/components/brand/Logo';
 import { Spinner } from '@/components/ui/EmptyState';
 import { cn } from '@/lib/format';
 import { useSeo } from '@/lib/seo';
 
-const NAV = [
+const ADMIN_NAV = [
   { to: '/admin', label: 'Resumen', icon: LayoutDashboard, end: true },
   { to: '/admin/productos', label: 'Productos', icon: Shirt },
   { to: '/admin/kit', label: 'Crear equipaciones', icon: Layers },
   { to: '/admin/categorias', label: 'Categorías', icon: Tags },
+  { to: '/admin/inventario', label: 'Inventario', icon: Warehouse },
+  { to: '/admin/promociones', label: 'Promociones', icon: BadgePercent },
   { to: '/admin/pedidos', label: 'Pedidos', icon: Package },
+  { to: '/admin/consultas', label: 'Tickets WhatsApp', icon: TicketCheck },
+  { to: '/admin/equipo', label: 'Equipo y accesos', icon: Users },
   { to: '/admin/ajustes', label: 'Ajustes', icon: Settings },
+];
+const OPERATOR_NAV = [
+  { to: '/admin', label: 'Resumen', icon: LayoutDashboard, end: true },
+  { to: '/admin/inventario', label: 'Inventario', icon: Warehouse },
+  { to: '/admin/pedidos', label: 'Pedidos', icon: Package },
+  { to: '/admin/consultas', label: 'Tickets WhatsApp', icon: TicketCheck },
 ];
 
 /** Protege todas las rutas /admin/*: requiere sesión y estar en la tabla admins. */
 export function RequireAdmin() {
-  const { session, isAdmin, loading, signOut } = useAuth();
+  const { session, role, loading, signOut } = useAuth();
   const location = useLocation();
   useSeo({ title: 'Administración', noindex: true });
 
   if (loading) return <Spinner label="Verificando acceso…" />;
   if (!session) return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;
-  if (!isAdmin) {
+  if (!role) {
     return (
       <div className="grid min-h-dvh place-items-center p-6 text-center">
         <div className="space-y-4">
           <h1 className="text-4xl font-extrabold tracking-tight">Sin permisos</h1>
-          <p className="text-mute">Tu usuario ({session.user.email}) no es administrador.</p>
+          <p className="text-mute">Tu usuario ({session.user.email}) no tiene acceso al panel.</p>
           <button onClick={signOut} className="btn-primary">Cerrar sesión</button>
         </div>
       </div>
@@ -38,14 +48,20 @@ export function RequireAdmin() {
   return <AdminLayout />;
 }
 
+export function AdminOnly({ children }: { children: ReactNode }) {
+  const { role } = useAuth();
+  return role === 'admin' ? children : <Navigate to="/admin" replace />;
+}
+
 function AdminLayout() {
-  const { session, signOut } = useAuth();
+  const { session, role, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const navItems = role === 'admin' ? ADMIN_NAV : OPERATOR_NAV;
 
   const sidebar = (
     <nav className="flex h-full flex-col gap-1 p-4" aria-label="Administración">
       <Link to="/admin" className="mb-6 px-2"><Logo /></Link>
-      {NAV.map(({ to, label, icon: Icon, end }) => (
+      {navItems.map(({ to, label, icon: Icon, end }) => (
         <NavLink
           key={to}
           to={to}

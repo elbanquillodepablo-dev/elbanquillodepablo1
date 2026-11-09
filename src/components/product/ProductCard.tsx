@@ -10,7 +10,8 @@ import { ProductImage } from './ProductImage';
 export function ProductCard({ product, priority = false, index = 0 }: { product: Product; priority?: boolean; index?: number }) {
   const { has, toggle } = useFavorites();
   const fav = has(product.id);
-  const off = discountPercent(product.price, product.compare_at_price);
+  const originalPrice = product.original_price ?? product.compare_at_price;
+  const off = discountPercent(product.price, originalPrice);
 
   return (
     <article className="stagger group relative" style={{ '--i': index % 12 } as CSSProperties}>
@@ -22,7 +23,7 @@ export function ProductCard({ product, priority = false, index = 0 }: { product:
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/60 to-transparent" />
           <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
             <span className="chip bg-ink/70 text-fg ring-1 ring-line backdrop-blur">{KIT_LABELS[product.kit_type]}</span>
-            {off && <span className="chip bg-card text-white">-{off}%</span>}
+              {off && <span className="chip bg-card text-white">-{off}%</span>}
           </div>
         </div>
         <div className="mt-3.5 space-y-1 px-1">
@@ -33,7 +34,7 @@ export function ProductCard({ product, priority = false, index = 0 }: { product:
           <div className="flex items-baseline justify-between gap-2 pt-0.5">
             <p className="tabular flex items-baseline gap-2">
               <span className="font-semibold">{formatPrice(product.price)}</span>
-              {off && <span className="text-xs text-mute line-through">{formatPrice(product.compare_at_price!)}</span>}
+              {off && <span className="text-xs text-mute line-through">{formatPrice(originalPrice!)}</span>}
             </p>
             <span className="text-[11px] text-mute">{VERSION_LABELS[product.version].replace('Versión ', '')}</span>
           </div>

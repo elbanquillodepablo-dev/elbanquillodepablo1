@@ -10,13 +10,14 @@ export default function TermsPage() {
       title="Términos, envíos y compra segura"
       description="Cómo comprar en El Banquillo de Pablo: pedidos por WhatsApp, envíos a toda Colombia, cambios, garantía y derecho de retracto (Ley 1480 de 2011)."
       path="/terminos"
-      updated="12 de octubre de 2026"
+      updated="9 de noviembre de 2026"
     >
       <Section title="Cómo comprar de forma segura">
         <ol className="list-decimal space-y-1 pl-5">
           <li>Elige tu camiseta, talla y personalización, y agrégala al carrito.</li>
-          <li>Completa tus datos de envío. Tu pedido queda registrado con un código (por ejemplo, BP-4F7A21).</li>
-          <li>Te escribimos o nos escribes por WhatsApp para confirmar disponibilidad, precio final, envío y medio de pago.</li>
+          <li>El carrito reserva las cantidades disponibles por dos horas desde el último cambio. Si vence, las unidades vuelven al inventario.</li>
+          <li>Escribe tu nombre y crea un ticket con código. El sitio prepara un mensaje de WhatsApp para que tú decidas si lo envías.</li>
+          <li>El ticket es una consulta, no una compra pagada. El equipo confirma la venta, el envío y el medio de pago contigo por WhatsApp.</li>
           <li>Solo después de confirmar todo realizas el pago por el medio acordado.</li>
         </ol>
         <p className="rounded-xl bg-surface p-4 ring-1 ring-line">
@@ -27,8 +28,9 @@ export default function TermsPage() {
 
       <Section title="Precios y disponibilidad">
         <p>
-          Los precios están en pesos colombianos (COP) e incluyen IVA cuando aplique. El valor del envío se informa antes de pagar.
-          La disponibilidad de tallas se confirma por WhatsApp; si una talla se agota, te ofrecemos alternativas o no realizas el pago.
+          Los precios están en pesos colombianos (COP) e incluyen IVA cuando aplique. Las promociones indican sus productos y vigencia; el precio
+          mostrado queda cotizado en el ticket durante la reserva. El valor del envío se informa antes de pagar. El administrador confirma la venta
+          por WhatsApp; si no puede atenderse, no realizas el pago y se libera la reserva.
         </p>
       </Section>
 

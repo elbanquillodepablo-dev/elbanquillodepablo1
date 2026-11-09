@@ -14,6 +14,7 @@ const PrivacyPage = lazy(() => import('@/pages/store/PrivacyPage'));
 const TermsPage = lazy(() => import('@/pages/store/TermsPage'));
 
 const RequireAdmin = lazy(() => import('@/pages/admin/AdminLayout').then((m) => ({ default: m.RequireAdmin })));
+const AdminOnly = lazy(() => import('@/pages/admin/AdminLayout').then((m) => ({ default: m.AdminOnly })));
 const LoginPage = lazy(() => import('@/pages/admin/LoginPage'));
 const DashboardPage = lazy(() => import('@/pages/admin/DashboardPage'));
 const ProductsPage = lazy(() => import('@/pages/admin/ProductsPage'));
@@ -22,6 +23,10 @@ const KitBuilderPage = lazy(() => import('@/pages/admin/KitBuilderPage'));
 const CategoriesPage = lazy(() => import('@/pages/admin/CategoriesPage'));
 const OrdersPage = lazy(() => import('@/pages/admin/OrdersPage'));
 const SettingsPage = lazy(() => import('@/pages/admin/SettingsPage'));
+const InventoryPage = lazy(() => import('@/pages/admin/InventoryPage'));
+const PromotionsPage = lazy(() => import('@/pages/admin/PromotionsPage'));
+const StaffPage = lazy(() => import('@/pages/admin/StaffPage'));
+const CartTicketsPage = lazy(() => import('@/pages/admin/CartTicketsPage'));
 
 const s = (el: ReactNode) => <Suspense fallback={<Spinner />}>{el}</Suspense>;
 
@@ -45,13 +50,17 @@ const router = createBrowserRouter([
     element: s(<RequireAdmin />),
     children: [
       { index: true, element: s(<DashboardPage />) },
-      { path: 'productos', element: s(<ProductsPage />) },
-      { path: 'productos/nuevo', element: s(<ProductFormPage />) },
-      { path: 'productos/:id', element: s(<ProductFormPage />) },
-      { path: 'kit', element: s(<KitBuilderPage />) },
-      { path: 'categorias', element: s(<CategoriesPage />) },
+      { path: 'productos', element: s(<AdminOnly><ProductsPage /></AdminOnly>) },
+      { path: 'productos/nuevo', element: s(<AdminOnly><ProductFormPage /></AdminOnly>) },
+      { path: 'productos/:id', element: s(<AdminOnly><ProductFormPage /></AdminOnly>) },
+      { path: 'kit', element: s(<AdminOnly><KitBuilderPage /></AdminOnly>) },
+      { path: 'categorias', element: s(<AdminOnly><CategoriesPage /></AdminOnly>) },
+      { path: 'inventario', element: s(<InventoryPage />) },
+      { path: 'promociones', element: s(<AdminOnly><PromotionsPage /></AdminOnly>) },
       { path: 'pedidos', element: s(<OrdersPage />) },
-      { path: 'ajustes', element: s(<SettingsPage />) },
+      { path: 'consultas', element: s(<CartTicketsPage />) },
+      { path: 'equipo', element: s(<AdminOnly><StaffPage /></AdminOnly>) },
+      { path: 'ajustes', element: s(<AdminOnly><SettingsPage /></AdminOnly>) },
     ],
   },
 ]);

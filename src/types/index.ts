@@ -6,6 +6,7 @@ export type KitType =
 export type ProductVersion = 'fan' | 'jugador';
 export type Audience = 'adulto' | 'nino' | 'mujer';
 export type OrderStatus = 'pendiente' | 'confirmado' | 'enviado' | 'entregado' | 'cancelado';
+export type StaffRole = 'admin' | 'operario';
 
 export interface Category {
   id: string;
@@ -50,10 +51,53 @@ export interface Product {
   updated_at: string;
   images: ProductImage[];
   category?: Pick<Category, 'id' | 'name' | 'slug'> | null;
+  /** Precio y promo vigentes que calcula Supabase para la tienda. */
+  original_price?: number | null;
+  promotion_title?: string | null;
 }
 
 /** Campos editables desde el admin */
-export type ProductInput = Omit<Product, 'id' | 'created_at' | 'updated_at' | 'images' | 'category'>;
+export type ProductInput = Omit<Product, 'id' | 'created_at' | 'updated_at' | 'images' | 'category' | 'original_price' | 'promotion_title'>;
+
+export interface InventoryAvailability {
+  size: string;
+  stock_on_hand: number;
+  available: number;
+}
+
+export interface CartTicketItem {
+  product_id: string | null;
+  product_name: string;
+  size: string;
+  quantity: number;
+  unit_price: number;
+  custom_name: string | null;
+  custom_number: string | null;
+}
+
+export interface CartTicket {
+  id: string;
+  code: string;
+  customer_name: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  expires_at: string;
+  confirmed_at: string | null;
+  created_at: string;
+  items: CartTicketItem[];
+  total: number;
+}
+
+export interface Promotion {
+  id: string;
+  title: string;
+  description: string | null;
+  discount_percent: number;
+  starts_at: string;
+  ends_at: string;
+  is_active: boolean;
+  created_at: string;
+  products?: { product_id: string }[];
+}
 
 export interface OrderItem {
   product_id: string;

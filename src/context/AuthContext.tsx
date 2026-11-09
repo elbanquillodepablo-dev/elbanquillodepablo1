@@ -1,10 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import type { StaffRole } from '@/types';
 
 interface AuthContextValue {
   session: Session | null;
   isAdmin: boolean;
+  role: StaffRole | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -12,24 +14,24 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-async function checkAdmin(userId: string | undefined): Promise<boolean> {
-  if (!userId) return false;
-  const { data } = await supabase.from('admins').select('user_id').eq('user_id', userId).maybeSingle();
-  return !!data;
+async function getStaffRole(userId: string | undefined): Promise<StaffRole | null> {
+  if (!userId) return null;
+  const { data } = await supabase.from('admins').select('role,is_active').eq('user_id', userId).maybeSingle();
+  return data?.is_active ? data.role as StaffRole : null;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [role, setRole] = useState<StaffRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
     const apply = async (s: Session | null) => {
-      const admin = await checkAdmin(s?.user.id);
+      const staffRole = await getStaffRole(s?.user.id);
       if (!active) return;
       setSession(s);
-      setIsAdmin(admin);
+      setRole(staffRole);
       setLoading(false);
     };
 
@@ -46,7 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(() => ({
     session,
-    isAdmin,
+    role,
+    isAdmin: role === 'admin',
     loading,
     signIn: async (email, password) => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -55,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       await supabase.auth.signOut();
     },
-  }), [session, isAdmin, loading]);
+  }), [session, role, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
