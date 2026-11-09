@@ -80,3 +80,10 @@ Cuenta inicial comprobada: correo confirmado, rol admin activo. La aplicación d
 ## Corrección del servicio de equipo (2026-11-09)
 Las funciones api/admin/staff, robots, sitemap y product-meta usan ahora el export Web Standard de Vercel (objeto con fetch). Antes exportaban una función directa con firma Web Request, incompatible con la entrada Node req/res. Adaptadores Netlify conservan la función mediante .fetch. El panel trata respuestas no JSON sin mostrar errores de parsing. Pruebas locales: staff 401 sin sesión, 403 origen externo, 405 método inválido; robots 200. La prueba autenticada de invitación sigue pendiente; no se enviaron correos.
 
+
+## Stock de prueba y simplificación de uso (2026-11-09)
+Por petición explícita se asignaron cantidades aleatorias de 1 a 5 a 14 variantes activas con stock cero; una variante Local L ya tenía 2 y se conservó. Carga aplicada una sola vez, no es una migración ni debe repetirse al desplegar. Total agregado: 47 unidades de prueba. Ajustar a inventario real antes de vender.
+
+Cantidades cargadas: Local S=4 M=3 XL=5 XXL=2; Tercera S=4 M=4 L=4 XL=5 XXL=5; Visitante S=3 M=1 L=4 XL=2 XXL=1. El historial inventory_adjustments conserva el cambio. No restablecer cantidades automáticamente: pueden existir reservas o cambios posteriores.
+
+Inventario agrupado por producto, buscador, disponibilidad/reservas y conservación de borradores al guardar otra talla. Panel con atajos a tickets, inventario y portada; acciones administrativas ocultas a operarios. Producto distingue carga/error/agotado, mejora contraste de talla seleccionada y elimina confirmación prematura de agregado. Compilación correcta; prueba aislada en navegador guardó S sin borrar el borrador M; móvil sin desbordamiento y producto muestra las cinco tallas. No se creó ningún ticket ni se envió WhatsApp durante estas comprobaciones.

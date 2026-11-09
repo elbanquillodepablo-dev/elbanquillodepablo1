@@ -4,8 +4,10 @@ import { useOrders, useProducts } from '@/hooks/queries';
 import { formatDate, formatPrice } from '@/lib/format';
 import { ORDER_STATUS_LABELS } from '@/lib/constants';
 import { AdminTitle } from './AdminLayout';
+import { useAuth } from '@/context/AuthContext';
 
 export default function DashboardPage() {
+  const { isAdmin } = useAuth();
   const { data: products = [] } = useProducts({ includeInactive: true });
   const { data: orders = [] } = useOrders();
 
@@ -21,9 +23,18 @@ export default function DashboardPage() {
   return (
     <>
       <AdminTitle title="Resumen">
-        <Link to="/admin/kit" className="btn-ghost"><Layers className="size-4" /> Crear equipaciones</Link>
-        <Link to="/admin/productos/nuevo" className="btn-primary"><Plus className="size-4" /> Nuevo producto</Link>
+        {isAdmin && <Link to="/admin/productos/nuevo" className="btn-primary"><Plus className="size-4" /> Nuevo producto</Link>}
       </AdminTitle>
+
+      <section className="mb-8 space-y-3" aria-label="Acciones frecuentes">
+        <h2 className="text-xl font-bold">¿Qué necesitas hacer?</h2>
+        <div className="flex flex-wrap gap-3">
+          <Link to="/admin/consultas" className="btn-primary">Atender tickets de WhatsApp</Link>
+          <Link to="/admin/inventario" className="btn-secondary">Actualizar existencias</Link>
+          {isAdmin && <Link to="/admin/ajustes" className="btn-secondary">Cambiar la portada</Link>}
+        </div>
+        <p className="text-sm text-mute">Revisa el ticket con el cliente. Confirma la venta cuando esté acordada; cancelar libera las unidades.</p>
+      </section>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map(({ label, value, icon: Icon }) => (
@@ -64,7 +75,7 @@ export default function DashboardPage() {
               {noImages.slice(0, 6).map((p) => (
                 <li key={p.id} className="flex items-center justify-between py-3 text-sm">
                   <span className="font-bold">{p.name}</span>
-                  <Link to={`/admin/productos/${p.id}`} className="font-bold text-volt">Subir fotos</Link>
+                  {isAdmin && <Link to={`/admin/productos/${p.id}`} className="font-bold text-volt">Subir fotos</Link>}
                 </li>
               ))}
             </ul>

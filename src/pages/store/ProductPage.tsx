@@ -61,7 +61,7 @@ function productJsonLd(p: Product) {
 export default function ProductPage() {
   const { slug = '' } = useParams();
   const { data: product, isLoading } = useProduct(slug);
-  const { data: inventory = [], isLoading: inventoryLoading } = useQuery({
+  const { data: inventory = [], isLoading: inventoryLoading, isError: inventoryError, refetch: reloadInventory } = useQuery({
     queryKey: ['inventory-availability', product?.id],
     queryFn: () => getInventoryAvailability(product!.id),
     enabled: !!product,
@@ -134,7 +134,6 @@ export default function ProductPage() {
       customName: customize ? customName.trim().toUpperCase() || undefined : undefined,
       customNumber: customize ? customNumber.trim() || undefined : undefined,
     });
-    toast(`${product.name} agregada al carrito`);
   };
 
   return (
@@ -209,7 +208,7 @@ export default function ProductPage() {
                   aria-pressed={size === s}
                   className={cn(
                     'h-12 min-w-14 rounded-xl px-4 text-sm font-extrabold ring-1 transition',
-                    size === s ? 'bg-volt text-fg ring-volt' : 'bg-surface ring-line hover:ring-line-strong',
+                    size === s ? 'bg-volt text-ink ring-volt' : 'bg-surface ring-line hover:ring-line-strong',
                     (inventoryLoading || (inventory.find((item) => item.size === s)?.available ?? 0) < 1) && 'cursor-not-allowed opacity-40 line-through',
                   )}
                 >
@@ -217,6 +216,7 @@ export default function ProductPage() {
                 </button>
               ))}
             </div>
+            {inventoryLoading ? <p className="mt-2 text-sm text-mute" role="status">Consultando disponibilidad…</p> : inventoryError ? <p className="mt-2 text-sm" role="alert">No pudimos consultar las tallas. <button onClick={() => reloadInventory()} className="text-volt underline">Reintentar</button></p> : <p className="mt-2 text-sm text-mute">{inventory.some((item) => item.available > 0) ? 'Elige tu talla. Las tallas tachadas están agotadas.' : 'Esta camiseta está agotada por ahora.'}</p>}
             {size && <p className="mt-2 text-xs text-mute">Unidades disponibles para {size}: {inventory.find((item) => item.size === size)?.available ?? 0}</p>}
             {sizeError && <p className="mt-2 text-sm font-semibold text-card" role="alert">Elige una talla para continuar.</p>}
           </fieldset>
@@ -241,8 +241,8 @@ export default function ProductPage() {
           </div>
 
           <div className="flex gap-3">
-            <button onClick={addToCart} className="btn-primary h-14 flex-1 text-base">
-              <ShoppingBag className="size-5" /> Agregar al carrito
+            <button onClick={addToCart} disabled={!cart.ready || cart.isSyncing || inventoryLoading || inventoryError || !inventory.some((item) => item.available > 0)} className="btn-primary h-14 flex-1 text-base">
+              <ShoppingBag className="size-5" /> {cart.isSyncing ? 'Reservando…' : 'Agregar al carrito'}
             </button>
             <button
               onClick={() => favs.toggle(product.id)}
@@ -253,6 +253,7 @@ export default function ProductPage() {
               <Heart className={cn('size-5', isFav && 'fill-card text-card')} />
             </button>
           </div>
+          <p className="text-sm text-mute">Sin crear cuenta ni pagar en línea. Agrega tus camisetas y continúa por WhatsApp desde el carrito.</p>
           {settings && (
             <a
               href={whatsappLink(settings.whatsapp_number, productInquiryMessage(product.name, window.location.href, size))}
