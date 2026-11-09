@@ -4,9 +4,10 @@ import { Lock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Logo } from '@/components/brand/Logo';
 import { useSeo } from '@/lib/seo';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
-  const { session, isAdmin, signIn } = useAuth();
+  const { session, role, signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from ?? '/admin';
@@ -14,9 +15,21 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState('');
   useSeo({ title: 'Acceso administración', noindex: true });
 
-  if (session && isAdmin) return <Navigate to={from} replace />;
+  if (session && role) return <Navigate to={from} replace />;
+
+  const recover = async () => {
+    if (!email.trim()) { setError('Escribe tu correo para solicitar el enlace.'); return; }
+    setLoading(true); setError(''); setNotice('');
+    try {
+      const { error: failure } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/admin/activar` });
+      if (failure) throw failure;
+      setNotice('Si el correo tiene una cuenta, recibirá un enlace para establecer su contraseña. Revisa también spam.');
+    } catch { setError('No se pudo enviar el enlace. Espera unos minutos e inténtalo de nuevo.'); }
+    finally { setLoading(false); }
+  };
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -47,7 +60,9 @@ export default function LoginPage() {
           <input className="input" type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
         {error && <p role="alert" className="text-sm font-semibold text-card">{error}</p>}
+        {notice && <p role="status" className="text-sm text-mute">{notice}</p>}
         <button disabled={loading} className="btn-primary h-12 w-full">{loading ? 'Entrando…' : 'Entrar'}</button>
+        <button type="button" disabled={loading} onClick={recover} className="min-h-11 w-full text-sm text-volt underline underline-offset-4">Crear o recuperar mi contraseña</button>
       </form>
     </div>
   );

@@ -60,3 +60,7 @@ sequenceDiagram
 El administrador puede configurar días y una franja diaria de atención en Ajustes. Durante la atención las reservas duran dos horas; fuera del horario configurado vencen dos horas después de la siguiente apertura. La regla está desactivada hasta que el administrador confirme el horario real. Las reservas existentes conservan su vencimiento hasta que se modifiquen. Horario visible opcional e independiente. Migración business_reservations aplicada.
 
 Se refinó la legibilidad del logo, la tipografía del inicio, el ritmo de texto y el movimiento reducido. El pie incluye Creado por Zenubit. Compilación y detector Impeccable correctos; revisión visual en navegador pendiente.
+
+## Primer acceso corregido
+
+Cuenta inicial comprobada: correo confirmado, rol admin activo. La aplicación dispone de /admin/activar para definir contraseña con sesión de invitación o recuperación. El login permite solicitar recuperación. Supabase Auth debe usar Site URL https://elbanquillodepablo.vercel.app y permitir https://elbanquillodepablo.vercel.app/admin/activar como Redirect URL. Esta configuración del proveedor sigue pendiente de guardar por el propietario; el código no puede sustituirla.

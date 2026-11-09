@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+// Capture the flow before Auth consumes and clears the URL fragment.
+export const initialAuthLinkType = new URLSearchParams(window.location.hash.slice(1)).get('type');
 
 if (!url || !key) {
   throw new Error(

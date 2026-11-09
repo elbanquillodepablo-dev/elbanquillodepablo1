@@ -63,8 +63,8 @@ export default async function handler(req: Request): Promise<Response> {
       return json({ message: 'La cuenta ya existía y ahora tiene acceso al panel.' });
     }
 
-    const site = process.env.VITE_SITE_URL || new URL(req.url).origin;
-    const { error } = await supabase.auth.admin.inviteUserByEmail(email, { redirectTo: `${site.replace(/\/$/, '')}/admin/login` });
+    const site = 'https://elbanquillodepablo.vercel.app';
+    const { error } = await supabase.auth.admin.inviteUserByEmail(email, { redirectTo: `${site}/admin/activar` });
     if (error) {
       await supabase.from('staff_invites').delete().eq('email', email);
       return json({ error: 'Supabase no pudo enviar la invitación. Revisa el correo o la configuración de Auth.' }, 400);

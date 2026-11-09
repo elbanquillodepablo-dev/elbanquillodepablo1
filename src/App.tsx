@@ -1,4 +1,5 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, type ReactNode } from 'react';
+import { initialAuthLinkType } from '@/lib/supabase';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { StoreLayout } from '@/components/layout/StoreLayout';
 import { Spinner } from '@/components/ui/EmptyState';
@@ -16,6 +17,7 @@ const TermsPage = lazy(() => import('@/pages/store/TermsPage'));
 const RequireAdmin = lazy(() => import('@/pages/admin/AdminLayout').then((m) => ({ default: m.RequireAdmin })));
 const AdminOnly = lazy(() => import('@/pages/admin/AdminLayout').then((m) => ({ default: m.AdminOnly })));
 const LoginPage = lazy(() => import('@/pages/admin/LoginPage'));
+const ActivatePage = lazy(() => import('@/pages/admin/ActivatePage'));
 const DashboardPage = lazy(() => import('@/pages/admin/DashboardPage'));
 const ProductsPage = lazy(() => import('@/pages/admin/ProductsPage'));
 const ProductFormPage = lazy(() => import('@/pages/admin/ProductFormPage'));
@@ -45,6 +47,7 @@ const router = createBrowserRouter([
     ],
   },
   { path: '/admin/login', element: s(<LoginPage />) },
+  { path: '/admin/activar', element: s(<ActivatePage />) },
   {
     path: '/admin',
     element: s(<RequireAdmin />),
@@ -66,5 +69,10 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
+  useEffect(() => {
+    if (initialAuthLinkType === 'invite' || initialAuthLinkType === 'recovery') {
+      void router.navigate('/admin/activar', { replace: true });
+    }
+  }, []);
   return <RouterProvider router={router} />;
 }
