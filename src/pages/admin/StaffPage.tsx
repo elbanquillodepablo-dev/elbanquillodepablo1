@@ -17,6 +17,9 @@ async function callStaffApi(token: string, method: 'GET' | 'POST', payload?: unk
     headers: { Authorization: `Bearer ${token}`, ...(method === 'POST' ? { 'Content-Type': 'application/json' } : {}) },
     ...(method === 'POST' ? { body: JSON.stringify(payload) } : {}),
   });
+  if (!response.headers.get('content-type')?.includes('application/json')) {
+    throw new Error(`El servicio de equipo no está disponible (HTTP ${response.status}). Inténtalo de nuevo en unos momentos.`);
+  }
   const body = await response.json() as TeamResponse & { error?: string; message?: string };
   if (!response.ok) throw new Error(body.error || 'No se pudo completar la solicitud.');
   return body;

@@ -3,7 +3,7 @@ import { siteOrigin, supabaseGet } from './_shared.ts';
 interface Row { slug: string; updated_at?: string }
 
 /** /sitemap.xml dinámico: inicio, tienda, categorías, productos activos y páginas legales. */
-export default async function handler(req: Request): Promise<Response> {
+async function handler(req: Request): Promise<Response> {
   const origin = siteOrigin(req);
   const [products, categories] = await Promise.all([
     supabaseGet<Row[]>('products?select=slug,updated_at&is_active=eq.true&order=updated_at.desc').catch(() => []),
@@ -32,3 +32,6 @@ export default async function handler(req: Request): Promise<Response> {
     },
   });
 }
+
+// Vercel Web Standard entry point.
+export default { fetch: handler };

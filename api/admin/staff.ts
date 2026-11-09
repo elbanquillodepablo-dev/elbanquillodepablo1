@@ -8,7 +8,7 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
   headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
 });
 
-export default async function handler(req: Request): Promise<Response> {
+async function handler(req: Request): Promise<Response> {
   if (req.method !== 'GET' && req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
   const origin = req.headers.get('origin');
   if (origin && origin !== new URL(req.url).origin) return json({ error: 'Origen inválido' }, 403);
@@ -16,7 +16,8 @@ export default async function handler(req: Request): Promise<Response> {
   const url = process.env.VITE_SUPABASE_URL;
   const key = process.env.SUPABASE_SECRET_KEY;
   const token = req.headers.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1];
-  if (!url || !key || !token) return json({ error: 'No se pudo verificar la sesión administrativa' }, 401);
+  if (!token) return json({ error: 'Inicia sesión para gestionar el equipo.' }, 401);
+  if (!url || !key) return json({ error: 'Falta configurar el acceso administrativo a Supabase en Vercel.' }, 503);
 
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: authData, error: authError } = await supabase.auth.getUser(token);
@@ -90,3 +91,14 @@ export default async function handler(req: Request): Promise<Response> {
 
   return json({ error: 'Acción no válida.' }, 400);
 }
+
+// Explicit Web Handler: a bare default function receives Node req/res in Vercel.
+export default {
+  async fetch(req: Request): Promise<Response> {
+    try {
+      return await handler(req);
+    } catch {
+      return json({ error: 'No se pudo conectar con el servicio de equipo. Inténtalo de nuevo en unos momentos.' }, 500);
+    }
+  },
+};

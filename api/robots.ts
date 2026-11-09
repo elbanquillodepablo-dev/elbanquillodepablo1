@@ -1,7 +1,7 @@
 import { siteOrigin } from './_shared.ts';
 
 /** /robots.txt con la URL del sitemap según el dominio real (vercel.app o propio). */
-export default function handler(req: Request): Response {
+function handler(req: Request): Response {
   const body = [
     'User-agent: *',
     'Allow: /',
@@ -17,3 +17,6 @@ export default function handler(req: Request): Response {
     headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, s-maxage=86400' },
   });
 }
+
+// Vercel Web Standard entry point.
+export default { fetch: handler };

@@ -19,7 +19,7 @@ const cop = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP',
  * Open Graph y JSON-LD del producto ya incluidos. Así WhatsApp, Facebook y Google
  * ven la foto, el nombre y el precio sin ejecutar JavaScript.
  */
-export default async function handler(req: Request): Promise<Response> {
+async function handler(req: Request): Promise<Response> {
   const origin = siteOrigin(req);
   // Vercel: /api/product-meta?slug=x · Netlify: /producto/x
   const reqUrl = new URL(req.url);
@@ -82,3 +82,6 @@ export default async function handler(req: Request): Promise<Response> {
     },
   });
 }
+
+// Vercel Web Standard entry point.
+export default { fetch: handler };

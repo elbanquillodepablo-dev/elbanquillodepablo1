@@ -76,3 +76,7 @@ Cuenta inicial comprobada: correo confirmado, rol admin activo. La aplicación d
 - React Router 7.18.5 y Vite 6.4.5: npm audit sin vulnerabilidades conocidas. API antigua create_order retirada para clientes; JSON de gestión de equipo validado; destino de login limitado a rutas administrativas.
 - Comprobaciones: compilación TypeScript y Vite, navegación pública y login, protección de /admin/ajustes, sin desbordamiento horizontal a 1440/768/390/320 px. Imagen sintética 12.0 MB -> 178282 bytes + 58474 bytes; sin subir datos de prueba. SQL con rol anon muestra catálogo y oculta admins/tickets; no puede confirmar ventas.
 - No se probó guardar ajustes con una sesión real del propietario ni enviar invitaciones/correos. Usuario indica haber guardado las URL de Auth. Revisar docs/SEGURIDAD.md para límites y pendientes.
+
+## Corrección del servicio de equipo (2026-11-09)
+Las funciones api/admin/staff, robots, sitemap y product-meta usan ahora el export Web Standard de Vercel (objeto con fetch). Antes exportaban una función directa con firma Web Request, incompatible con la entrada Node req/res. Adaptadores Netlify conservan la función mediante .fetch. El panel trata respuestas no JSON sin mostrar errores de parsing. Pruebas locales: staff 401 sin sesión, 403 origen externo, 405 método inválido; robots 200. La prueba autenticada de invitación sigue pendiente; no se enviaron correos.
+

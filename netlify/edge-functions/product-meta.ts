@@ -2,5 +2,5 @@
 // para que WhatsApp, Facebook y Google vean la foto y el precio.
 import handler from '../../api/product-meta.ts';
 
-export default handler;
+export default handler.fetch;
 export const config = { path: '/producto/*' };
