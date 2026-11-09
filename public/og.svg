@@ -6,13 +6,7 @@
   </defs>
   <rect width="1200" height="630" fill="#0b0d0c"/>
   <rect width="1200" height="630" fill="url(#g)"/>
-  <g transform="translate(100 155) scale(5)">
-    <path d="M32 3.5 56.5 11v19.5C56.5 45 46.5 54.8 32 60.5 17.5 54.8 7.5 45 7.5 30.5V11Z" fill="url(#f)" stroke="url(#e)" stroke-width="2" stroke-linejoin="round"/>
-    <path d="M18.5 39v-7a13.5 13.5 0 0 1 27 0v7" fill="none" stroke="#cff04a" stroke-width="3.6" stroke-linecap="round"/>
-    <path d="M20.5 42h23" stroke="#f3f2ed" stroke-width="3.6" stroke-linecap="round"/>
-    <path d="M23.5 42v6.5M40.5 42v6.5" stroke="#f3f2ed" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="32" cy="31" r="3.4" fill="#f3f2ed"/>
-  </g>
+  <g transform="translate(100 155) scale(5)"><rect x="3" y="3" width="58" height="58" rx="14" fill="#cff04a"/><g fill="#17452c"><rect x="14" y="17" width="10" height="19" rx="3"/><rect x="27" y="17" width="10" height="19" rx="3"/><rect x="40" y="17" width="10" height="19" rx="3"/><path d="M12 39h40v6H12zM17 44h6v7h-6zM41 44h6v7h-6z"/></g></g>
   <text x="470" y="300" font-family="Impact, 'Big Shoulders Display', sans-serif" font-weight="900" font-size="112" fill="#f3f2ed">EL BANQUILLO</text>
   <text x="474" y="370" font-family="Impact, 'Big Shoulders Display', sans-serif" font-weight="800" font-size="48" fill="#cff04a" letter-spacing="18">DE PABLO</text>
   <text x="474" y="450" font-family="Arial, sans-serif" font-size="30" fill="#8f9792">Camisetas de fútbol · Envíos a toda Colombia</text>

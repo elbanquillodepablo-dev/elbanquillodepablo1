@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, Home, LayoutGrid, Menu, Search, ShoppingBag, X } from 'lucide-react';
+import { Heart, Home, LayoutGrid, Menu, Search, ShoppingBag, UserRound, X } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import { Logo } from '@/components/brand/Logo';
 import { useCart } from '@/context/CartContext';
 import { useFavorites } from '@/context/FavoritesContext';
@@ -8,6 +9,7 @@ import { useCategories } from '@/hooks/queries';
 import { cn } from '@/lib/format';
 
 export function Header() {
+  const { role } = useAuth();
   const { count, open } = useCart();
   const { ids } = useFavorites();
   const { data: categories = [] } = useCategories();
@@ -71,6 +73,9 @@ export function Header() {
           </form>
 
           <div className="ml-auto flex items-center gap-1 md:ml-1">
+            <Link to={role ? '/admin' : '/admin/login'} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3 text-sm font-semibold hover:bg-surface-2">
+              <UserRound className="size-4" /><span>{role ? 'Mi panel' : 'Ingresar'}</span>
+            </Link>
             <IconLink to="/favoritos" label={`Favoritos (${ids.length})`} badge={ids.length} className="hidden sm:grid">
               <Heart className="size-5" />
             </IconLink>

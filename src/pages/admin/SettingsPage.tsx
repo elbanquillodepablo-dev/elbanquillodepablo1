@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Save } from 'lucide-react';
-import { qk, useSettings } from '@/hooks/queries';
+import { qk, useProducts, useSettings } from '@/hooks/queries';
 import { updateSettings } from '@/services/catalog';
 import { errorMessage, useToast } from '@/context/ToastContext';
 import { Spinner } from '@/components/ui/EmptyState';
@@ -15,6 +15,7 @@ const FIELDS: Field[] = [
   { key: 'whatsapp_number', label: 'WhatsApp (con indicativo, sin +)', hint: 'Ej. 573001234567 — aquí llegan los pedidos' },
   { key: 'hero_title', label: 'Título del inicio' },
   { key: 'hero_subtitle', label: 'Subtítulo del inicio', textarea: true },
+  { key: 'hero_button_label', label: 'Texto del botón principal', hint: 'Máximo 40 caracteres. Abre la camiseta elegida o el catálogo.' },
   { key: 'shipping_note', label: 'Nota de envíos', textarea: true },
   { key: 'hours', label: 'Horario visible en la tienda', hint: 'Opcional. Déjalo vacío para ocultarlo. Este texto no cambia el vencimiento de las reservas.' },
   { key: 'city', label: 'Ciudad / ubicación' },
@@ -24,6 +25,7 @@ const FIELDS: Field[] = [
 
 export default function SettingsPage() {
   const { data, isLoading } = useSettings();
+  const { data: products = [] } = useProducts();
   const [form, setForm] = useState<Partial<StoreSettings>>({});
   const [saving, setSaving] = useState(false);
   const qc = useQueryClient();
@@ -52,6 +54,17 @@ export default function SettingsPage() {
     <>
       <AdminTitle title="Ajustes" />
       <form onSubmit={onSubmit} className="max-w-2xl space-y-4 rounded-2xl bg-surface p-5 ring-1 ring-line sm:p-6">
+        <fieldset className="mb-6 space-y-4 border-b border-line pb-6">
+          <legend className="mb-3 text-xl font-semibold">Portada de la tienda</legend>
+          <p className="text-sm text-mute">Elige qué ve primero el cliente. Los descuentos se calculan desde Promociones; las novedades usan la fecha de creación.</p>
+          <label className="field">Selección del inicio<select className="input" value={form.home_collection ?? 'featured'} onChange={(e) => setForm({ ...form, home_collection: e.target.value as StoreSettings['home_collection'] })}>
+            <option value="featured">Camisetas destacadas</option><option value="new">Nuevas referencias</option><option value="promotions">Descuentos vigentes</option>
+          </select></label>
+          <label className="field">Camiseta principal<select className="input" value={form.hero_product_id ?? ''} onChange={(e) => setForm({ ...form, hero_product_id: e.target.value || null })}>
+            <option value="">Automática según la selección</option>{products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select></label>
+          <a href="/" target="_blank" rel="noreferrer" className="inline-block text-sm text-volt underline">Ver la tienda</a>
+        </fieldset>
         <fieldset className="space-y-4 border-b border-line pb-6 mb-6">
           <legend className="mb-3 text-xl font-semibold">Horario y reservas</legend>
           <label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={form.reservation_schedule_enabled ?? false} onChange={(e) => setForm({ ...form, reservation_schedule_enabled: e.target.checked })} />Usar horario de atención para las reservas</label>
@@ -65,7 +78,7 @@ export default function SettingsPage() {
             {textarea ? (
               <textarea className="input" rows={2} value={(form[key] as string) ?? ''} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
             ) : (
-              <input className="input" value={(form[key] as string) ?? ''} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+              <input className="input" maxLength={key === 'hero_button_label' ? 40 : undefined} required={key === 'hero_button_label'} value={(form[key] as string) ?? ''} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
             )}
             {hint && <span className="text-xs font-medium text-mute">{hint}</span>}
           </label>

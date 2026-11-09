@@ -64,3 +64,15 @@ Se refinó la legibilidad del logo, la tipografía del inicio, el ritmo de texto
 ## Primer acceso corregido
 
 Cuenta inicial comprobada: correo confirmado, rol admin activo. La aplicación dispone de /admin/activar para definir contraseña con sesión de invitación o recuperación. El login permite solicitar recuperación. Supabase Auth debe usar Site URL https://elbanquillodepablo.vercel.app y permitir https://elbanquillodepablo.vercel.app/admin/activar como Redirect URL. Esta configuración del proveedor sigue pendiente de guardar por el propietario; el código no puede sustituirla.
+
+## Portada, fotos y seguridad — 2026-11-09
+
+- Corregido el error público del catálogo: políticas de lectura separadas para visitantes, sin concederles ejecución de funciones administrativas. Migración storefront_access_and_campaign aplicada a la única base del proyecto.
+- Ajustes > Portada: destacados, nuevas referencias o descuentos vigentes; camiseta principal opcional y texto del botón. Título/subtítulo siguen siendo editables. Selecciones vacías muestran un mensaje honesto.
+- Ingresar visible en escritorio y móvil; Mi panel cuando existe rol activo. Usuarios internos conservan los permisos en base y servidor.
+- Nuevo símbolo de tres asientos, wordmark e iconos de aplicación. Color verde/lima conservado. Portada como cartel de la selección de Pablo; no se inventaron fotos ni descuentos. La base tiene tres productos y ninguna foto al verificar.
+- Fotos nuevas: WebP/JPEG con presupuesto objetivo 350 KiB + miniatura 80 KiB; reducción de calidad y dimensiones, máximo de entrada 25 MiB/48 MP, SVG/GIF rechazados, recodificación sin metadatos. Tarjetas usan miniatura; detalle usa imagen grande. No reoptimiza archivos antiguos.
+- Una sola consulta de productos en inicio; precios ordenados después de aplicar descuentos. Fecha de vencimiento incluye el día para reservas nocturnas.
+- React Router 7.18.5 y Vite 6.4.5: npm audit sin vulnerabilidades conocidas. API antigua create_order retirada para clientes; JSON de gestión de equipo validado; destino de login limitado a rutas administrativas.
+- Comprobaciones: compilación TypeScript y Vite, navegación pública y login, protección de /admin/ajustes, sin desbordamiento horizontal a 1440/768/390/320 px. Imagen sintética 12.0 MB -> 178282 bytes + 58474 bytes; sin subir datos de prueba. SQL con rol anon muestra catálogo y oculta admins/tickets; no puede confirmar ventas.
+- No se probó guardar ajustes con una sesión real del propietario ni enviar invitaciones/correos. Usuario indica haber guardado las URL de Auth. Revisar docs/SEGURIDAD.md para límites y pendientes.

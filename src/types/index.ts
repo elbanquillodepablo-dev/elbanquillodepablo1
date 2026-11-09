@@ -157,6 +157,9 @@ export interface StoreSettings {
   hours: string | null;
   hero_title: string | null;
   hero_subtitle: string | null;
+  home_collection: 'featured' | 'new' | 'promotions';
+  hero_product_id: string | null;
+  hero_button_label: string;
   shipping_note: string | null;
 }
 

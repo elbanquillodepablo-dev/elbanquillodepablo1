@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { Category, CustomerInput, Order, OrderStatus, StoreSettings, CartItem } from '@/types';
+import type { Category, Order, OrderStatus, StoreSettings } from '@/types';
 
 // ---------- Categorías ----------
 export async function listCategories(includeInactive = false): Promise<Category[]> {
@@ -33,22 +33,6 @@ export async function updateSettings(input: Partial<StoreSettings>): Promise<voi
 }
 
 // ---------- Pedidos ----------
-export async function createOrder(customer: CustomerInput, items: CartItem[]) {
-  const { data, error } = await supabase.rpc('create_order', {
-    p_customer: customer,
-    p_items: items.map((i) => ({
-      product_id: i.productId,
-      size: i.size,
-      quantity: i.quantity,
-      custom_name: i.customName ?? '',
-      custom_number: i.customNumber ?? '',
-    })),
-  });
-  if (error) throw error;
-  const row = (data as { order_id: string; order_code: string; order_total: number }[])[0];
-  return { id: row.order_id, code: row.order_code, total: row.order_total };
-}
-
 export async function listOrders(status?: OrderStatus): Promise<Order[]> {
   let q = supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(200);
   if (status) q = q.eq('status', status);

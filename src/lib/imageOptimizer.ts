@@ -39,7 +39,8 @@ const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/
 const MAX_INPUT_BYTES = 25 * 1024 * 1024;
 
 export function validateImageFile(file: File): string | null {
-  if (!file.type.startsWith('image/') && !ACCEPTED.includes(file.type)) return 'El archivo no es una imagen.';
+  if (!ACCEPTED.includes(file.type)) return 'Usa una imagen JPG, PNG, WebP, AVIF o HEIC. No se admiten SVG ni GIF.';
+  if (!file.size) return 'La imagen está vacía.';
   if (file.size > MAX_INPUT_BYTES) return 'La imagen supera 25 MB.';
   return null;
 }
@@ -62,7 +63,30 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number):
 
 function fit(w: number, h: number, max: number) {
   const scale = Math.min(1, max / Math.max(w, h));
-  return { width: Math.round(w * scale), height: Math.round(h * scale) };
+  return { width: Math.max(1, Math.round(w * scale)), height: Math.max(1, Math.round(h * scale)) };
+}
+
+/** Reduce quality, then dimensions if needed, to keep a predictable download budget. */
+async function encodeWithinBudget(canvas: HTMLCanvasElement, type: string, quality: number, budget: number): Promise<Blob> {
+  let current = canvas;
+  let blob = await canvasToBlob(current, type, quality);
+  for (let q = quality - 0.08; blob.size > budget && q >= 0.58; q -= 0.08) {
+    blob = await canvasToBlob(current, type, q);
+  }
+  while (blob.size > budget && Math.max(current.width, current.height) > 480) {
+    const dims = fit(current.width, current.height, Math.floor(Math.max(current.width, current.height) * 0.8));
+    const smaller = resize(current, current.width, current.height, dims.width, dims.height);
+    if (current !== canvas) { current.width = current.height = 0; }
+    current = smaller;
+    blob = await canvasToBlob(current, type, 0.72);
+  }
+  // Keep dimensions accurate for responsive image selection.
+  if (current !== canvas) {
+    canvas.width = current.width; canvas.height = current.height;
+    canvas.getContext('2d')!.drawImage(current, 0, 0);
+    current.width = current.height = 0;
+  }
+  return blob;
 }
 
 /** Reescala a la mitad repetidamente hasta acercarse al destino: más nítido que un solo salto. */
@@ -106,6 +130,11 @@ export async function optimizeImage(file: File, options: OptimizeOptions = {}): 
     throw new Error('Formato no soportado por este navegador (si es HEIC, expórtala como JPG).');
   }
 
+  if (bitmap.width * bitmap.height > 48_000_000) {
+    bitmap.close();
+    throw new Error('La foto supera 48 megapíxeles. Expórtala con menor resolución.');
+  }
+
   const useWebp = await supportsWebpEncode();
   const mime = useWebp ? 'image/webp' : 'image/jpeg';
 
@@ -118,15 +147,15 @@ export async function optimizeImage(file: File, options: OptimizeOptions = {}): 
   bitmap.close();
 
   const [full, thumb] = await Promise.all([
-    canvasToBlob(fullCanvas, mime, opts.quality),
-    canvasToBlob(thumbCanvas, mime, opts.thumbQuality),
+    encodeWithinBudget(fullCanvas, mime, opts.quality, 350 * 1024),
+    encodeWithinBudget(thumbCanvas, mime, opts.thumbQuality, 80 * 1024),
   ]);
 
   return {
     full,
     thumb,
-    width: fullDims.width,
-    height: fullDims.height,
+    width: fullCanvas.width,
+    height: fullCanvas.height,
     extension: useWebp ? 'webp' : 'jpg',
     originalBytes: file.size,
     optimizedBytes: full.size + thumb.size,

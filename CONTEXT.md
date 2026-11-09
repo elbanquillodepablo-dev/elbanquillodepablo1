@@ -374,3 +374,6 @@ Qué hace la configuración de Netlify:
 - Para continuar con IA: abre el repo, pide *"lee CONTEXT.md"* y sigue con la sección 10.
 
 > ⚠️ **Nota de red (2026-10-12):** desde la red de la oficina, las conexiones HTTPS a `*.supabase.co` se interceptan con un certificado no confiable y a veces redirigen a `147.45.69.3`. Afecta al navegador y a Node. **No** se debe desactivar la verificación TLS para saltarlo. Prueba con otra red (datos del celular) y consúltalo con TI. Los clientes en producción (Vercel) no se ven afectados.
+
+## Estado actual (2026-11-09)
+La evolución de inventario, tickets, roles, horarios y portada está documentada en docs/PRD.md. La revisión de seguridad y sus límites están en docs/SEGURIDAD.md. El primer administrador ya tiene rol activo; la contraseña se establece en /admin/activar. El propietario confirmó haber actualizado las URL de Auth.

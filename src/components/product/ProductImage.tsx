@@ -7,7 +7,7 @@ interface Props {
   image?: TImage | null;
   alt: string;
   kit?: KitType;
-  /** "card" usa la miniatura; "full" deja que el navegador elija con srcset */
+  /** Cards download only the thumbnail; detail views use the bounded full image. */
   variant?: 'card' | 'full';
   priority?: boolean;
   className?: string;
@@ -21,19 +21,18 @@ const KIT_COLORS: Partial<Record<KitType, [string, string]>> = {
   retro: ['#e6dfcf', '#17452c'],
 };
 
-/** Imagen optimizada: srcset (thumb 640w / full 1600w), lazy-load, sin saltos de layout y fondo mientras carga. */
+/** Miniaturas en listados, carga diferida y dimensiones para evitar saltos. */
 export function ProductImage({ image, alt, kit = 'local', variant = 'card', priority = false, className }: Props) {
   const [loaded, setLoaded] = useState(false);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const full = publicImageUrl(image?.path);
   const thumb = publicImageUrl(image?.thumb_path) ?? full;
 
-  if (!full) return <JerseyPlaceholder kit={kit} className={className} />;
+  if (!full || failedSrc === full) return <JerseyPlaceholder kit={kit} className={className} />;
 
   return (
     <img
       src={variant === 'card' ? thumb! : full}
-      srcSet={thumb && thumb !== full ? `${thumb} 640w, ${full} 1600w` : undefined}
-      sizes={variant === 'card' ? '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw' : '(min-width: 1024px) 50vw, 100vw'}
       width={image?.width ?? undefined}
       height={image?.height ?? undefined}
       alt={image?.alt || alt}
@@ -42,6 +41,7 @@ export function ProductImage({ image, alt, kit = 'local', variant = 'card', prio
       // React 18 aún no conoce la prop camelCase; el atributo HTML sí funciona
       {...{ fetchpriority: priority ? 'high' : 'auto' }}
       onLoad={() => setLoaded(true)}
+      onError={() => setFailedSrc(full)}
       className={cn('h-full w-full object-cover transition-opacity duration-500', loaded ? 'opacity-100' : 'opacity-0', className)}
     />
   );

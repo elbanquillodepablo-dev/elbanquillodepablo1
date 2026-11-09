@@ -39,10 +39,15 @@ export default async function handler(req: Request): Promise<Response> {
   const contentLength = Number(req.headers.get('content-length') ?? 0);
   if (contentLength > 4096) return json({ error: 'Solicitud demasiado grande' }, 413);
   let body: { action?: string; email?: string; role?: string; user_id?: string };
-  try { body = await req.json() as typeof body; } catch { return json({ error: 'Solicitud inválida' }, 400); }
+  try {
+    const raw = await req.text();
+    if (new TextEncoder().encode(raw).length > 4096) return json({ error: 'Solicitud demasiado grande' }, 413);
+    body = JSON.parse(raw) as typeof body;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) return json({ error: 'Solicitud inválida' }, 400);
+  } catch { return json({ error: 'Solicitud inválida' }, 400); }
 
   if (body.action === 'invite') {
-    const email = body.email?.trim().toLowerCase() ?? '';
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const role = body.role;
     if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Escribe un correo válido.' }, 400);
     if (email === authData.user.email?.toLowerCase()) return json({ error: 'Usa otro correo para invitar a una persona distinta.' }, 400);
@@ -73,7 +78,7 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   if (body.action === 'deactivate') {
-    const id = body.user_id ?? '';
+    const id = typeof body.user_id === 'string' ? body.user_id : '';
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) return json({ error: 'Usuario inválido.' }, 400);
     if (id === authData.user.id) return json({ error: 'No puedes quitarte tu propio acceso.' }, 400);
     const { data: member, error } = await supabase.from('admins').select('role,is_active').eq('user_id', id).maybeSingle();

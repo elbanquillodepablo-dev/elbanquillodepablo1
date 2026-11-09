@@ -10,7 +10,8 @@ export default function LoginPage() {
   const { session, role, signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: string } | null)?.from ?? '/admin';
+  const requestedPath = (location.state as { from?: unknown } | null)?.from;
+  const from = typeof requestedPath === 'string' && /^\/admin(?:\/[a-z0-9/-]*)?$/.test(requestedPath) ? requestedPath : '/admin';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

@@ -46,7 +46,8 @@ export async function listProducts(filters: ProductFilters = {}): Promise<Produc
   if (filters.audience) query = query.eq('audience', filters.audience);
   if (filters.version) query = query.eq('version', filters.version);
   if (filters.category) {
-    const { data: cat } = await supabase.from('categories').select('id').eq('slug', filters.category).maybeSingle();
+    const { data: cat, error: categoryError } = await supabase.from('categories').select('id').eq('slug', filters.category).maybeSingle();
+    if (categoryError) throw categoryError;
     if (!cat) return [];
     query = query.eq('category_id', cat.id);
   }
@@ -67,7 +68,10 @@ export async function listProducts(filters: ProductFilters = {}): Promise<Produc
 
   const { data, error } = await query;
   if (error) throw error;
-  return applyStorePrices((data as Product[]).map(sortImages));
+  const products = await applyStorePrices((data as Product[]).map(sortImages));
+  if (filters.sort === 'precio-asc') products.sort((a, b) => a.price - b.price);
+  if (filters.sort === 'precio-desc') products.sort((a, b) => b.price - a.price);
+  return products;
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {

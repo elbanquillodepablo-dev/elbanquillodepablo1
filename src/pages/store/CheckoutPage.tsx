@@ -38,7 +38,7 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-lg space-y-5 text-center">
         <CheckCircle2 className="mx-auto size-16 text-volt" />
         <h1 className="text-5xl font-extrabold tracking-tight">¡Tu carrito está listo!</h1>
-        <p className="text-mute">Tu ticket <strong className="text-fg">{done.code}</strong> quedó registrado. Abre WhatsApp y envía el mensaje para que podamos atenderte. La reserva vence a las {new Date(done.expiresAt).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' })}.</p>
+        <p className="text-mute">Tu ticket <strong className="text-fg">{done.code}</strong> quedó registrado. Abre WhatsApp y envía el mensaje para que podamos atenderte. La reserva vence a las {new Date(done.expiresAt).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' })}.</p>
         <a href={done.link} target="_blank" rel="noreferrer" className="btn h-12 w-full bg-pitch text-fg"><MessageCircle className="size-5"/>Abrir WhatsApp</a>
         <p className="text-xs text-mute">El mensaje no se envía automáticamente. No hay pago en línea; el administrador confirma el pedido contigo.</p>
         <Link to="/tienda" className="btn-ghost w-full">Seguir comprando</Link>
@@ -84,7 +84,7 @@ export default function CheckoutPage() {
           <p className="text-sm font-extrabold">{formatPrice(item.price * item.quantity)}</p>
         </li>)}</ul>
         <div className="flex items-baseline justify-between border-t border-line pt-4"><span className="font-semibold text-mute">Total cotizado</span><span className="text-2xl font-black">{formatPrice(cart.subtotal)}</span></div>
-        {cart.expiresAt && <p className="text-xs text-mute">Esta reserva vence a las {new Date(cart.expiresAt).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' })}.</p>}
+        {cart.expiresAt && <p className="text-xs text-mute">Esta reserva vence a las {new Date(cart.expiresAt).toLocaleString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'America/Bogota' })}.</p>}
       </aside>
     </div>
   </div>;

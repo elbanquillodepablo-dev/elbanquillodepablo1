@@ -14,10 +14,14 @@ import { storeJsonLd, useSeo } from '@/lib/seo';
 export default function HomePage() {
   const { data: settings } = useSettings();
   const { data: categories = [] } = useCategories();
-  const featured = useProducts({ featured: true });
   const all = useProducts();
   const products = all.data ?? [];
-  const spotlight = featured.data?.[0] ?? products[0];
+  const collection = settings?.home_collection ?? 'featured';
+  const selected = collection === 'promotions' ? products.filter((p) => p.promotion_title)
+    : collection === 'new' ? [...products].sort((a, b) => b.created_at.localeCompare(a.created_at))
+    : products.filter((p) => p.is_featured);
+  const spotlight = products.find((p) => p.id === settings?.hero_product_id) ?? selected[0] ?? products[0];
+  const collectionTitle = collection === 'promotions' ? 'Descuentos en juego' : collection === 'new' ? 'Acaban de llegar' : 'La selección de Pablo';
   const collage = [spotlight, ...products.filter((p) => p.id !== spotlight?.id)].filter(Boolean).slice(0, 3) as Product[];
   const teams = Array.from(new Set(products.map((p) => p.team)));
 
@@ -26,23 +30,22 @@ export default function HomePage() {
   return (
     <>
       {/* HERO — split asimétrico: texto a la izquierda, collage a la derecha */}
-      <section className="stadium-glow -mt-[76px] pt-[76px]">
-        <div className="container-page grid items-center gap-12 pb-16 pt-10 md:pt-16 lg:grid-cols-[1.05fr_1fr] lg:pb-24">
+      <section className="container-page pt-5">
+        <div className="grid items-center gap-8 rounded-2xl bg-pitch p-6 md:p-10 lg:grid-cols-[1.05fr_1fr] lg:p-14">
           <div className="animate-fade-up space-y-7">
-            <p className="eyebrow">Temporada 2026/27</p>
             <h1 className="max-w-[12ch] text-[clamp(2.75rem,7vw,5.75rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">
               {settings?.hero_title ?? 'Vístete de titular'}<span className="text-volt">.</span>
             </h1>
-            <p className="max-w-[46ch] text-lg leading-relaxed text-mute">
+            <p className="max-w-[46ch] text-lg leading-relaxed text-fg/85">
               {settings?.hero_subtitle ?? 'Camisetas de clubes y selecciones. Local, visitante y tercera.'}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/tienda" className="btn-volt h-13 px-7 text-base">
-                Explorar camisetas <ArrowRight className="size-4" />
+              <Link to={settings?.hero_product_id && spotlight?.id === settings.hero_product_id ? `/producto/${spotlight.slug}` : '/tienda'} className="btn-volt h-13 px-7 text-base">
+                {settings?.hero_button_label || 'Explorar camisetas'} <ArrowRight className="size-4" />
               </Link>
               {settings && (
                 <a href={whatsappLink(settings.whatsapp_number, 'Hola, quiero asesoría para elegir mi camiseta.')}
-                  target="_blank" rel="noreferrer" className="btn-ghost h-13 px-6 text-base">
+                  target="_blank" rel="noreferrer" className="btn-ghost h-13 px-6 text-base text-fg">
                   <MessageCircle className="size-4" /> Asesoría por WhatsApp
                 </a>
               )}
@@ -54,12 +57,19 @@ export default function HomePage() {
       </section>
 
       {/* MARQUEE de equipos */}
-      {teams.length > 0 && <TeamMarquee teams={teams} />}
+      {teams.length > 1 && <TeamMarquee teams={teams} />}
+
+      {!all.isError && !all.isLoading && (
+        <section className="container-page pt-16">
+          <SectionHeader title={collectionTitle} link="/tienda" />
+          {selected.length ? <ProductGrid products={selected.slice(0, 4)} /> : <p className="text-mute">{collection === 'promotions' ? 'Pronto tendremos nuevos descuentos. Mientras tanto, explora nuestras camisetas.' : 'Estamos preparando esta selección. Encuentra todas las camisetas en el catálogo.'}</p>}
+        </section>
+      )}
 
       {/* CATEGORÍAS — bento */}
       {categories.length > 0 && (
         <section className="container-page pt-20">
-          <SectionHeader eyebrow="Convocatoria" title="Compra por categoría" />
+          <SectionHeader title="Compra por categoría" />
           <div className="grid auto-rows-[180px] grid-cols-2 gap-3 md:auto-rows-[220px] md:grid-cols-4">
             {categories.map((c, i) => (
               <Link
@@ -109,12 +119,12 @@ export default function HomePage() {
 
       {/* CATÁLOGO */}
       <section className="container-page pt-24">
-        <SectionHeader eyebrow="Catálogo" title="Todas las camisetas, en un solo lugar." link="/tienda" />
+        <SectionHeader title="Todas las camisetas, en un solo lugar." link="/tienda" />
         {all.isLoading ? (
           <ProductGridSkeleton count={8} />
         ) : all.isError ? (
-          <EmptyState icon={<WifiOff />} title="Sin conexión con el estadio">
-            No pudimos cargar las camisetas. Revisa tu conexión e inténtalo de nuevo.
+          <EmptyState icon={<WifiOff />} title="No pudimos cargar el catálogo">
+            Inténtalo de nuevo en unos momentos. Si continúa, contáctanos por WhatsApp.
             <div className="mt-4"><button onClick={() => all.refetch()} className="btn-ghost">Reintentar</button></div>
           </EmptyState>
         ) : (
@@ -157,9 +167,9 @@ function HeroCollage({ products, loading }: { products: Product[]; loading: bool
   if (!products.length) return null;
   const [main, ...rest] = products;
   return (
-    <div className="grid h-[460px] grid-cols-[1.4fr_1fr] grid-rows-2 gap-3 md:h-[560px]">
-      <CollageTile product={main} className={cn(rest.length ? 'row-span-2' : 'col-span-2 row-span-2')} priority index={0} />
-      {rest.map((p, i) => <CollageTile key={p.id} product={p} className={rest.length === 1 ? 'row-span-2' : ''} index={i + 1} />)}
+    <div className="grid h-[320px] grid-cols-1 gap-3 sm:h-[460px] sm:grid-cols-[1.4fr_1fr] sm:grid-rows-2 md:h-[560px]">
+      <CollageTile product={main} className={cn('sm:row-span-2', !rest.length && 'sm:col-span-2')} priority index={0} />
+      {rest.map((p, i) => <CollageTile key={p.id} product={p} className={cn('hidden sm:block', rest.length === 1 && 'row-span-2')} index={i + 1} />)}
     </div>
   );
 }
@@ -198,11 +208,10 @@ function TeamMarquee({ teams }: { teams: string[] }) {
   );
 }
 
-function SectionHeader({ eyebrow, title, link }: { eyebrow: string; title: string; link?: string }) {
+function SectionHeader({ title, link }: { title: string; link?: string }) {
   return (
     <div className="mb-8 flex items-end justify-between gap-6">
       <div className="space-y-2">
-        <p className="eyebrow">{eyebrow}</p>
         <h2 className="max-w-[18ch] text-3xl font-extrabold leading-[0.95] tracking-[-0.04em] sm:text-5xl">{title}</h2>
       </div>
       {link && (
