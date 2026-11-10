@@ -1,23 +1,25 @@
 import { Link } from 'react-router-dom';
-import { ImageOff, Layers, Package, Plus, Shirt } from 'lucide-react';
-import { useOrders, useProducts } from '@/hooks/queries';
+import { Layers, Package, Plus, Shirt, Warehouse } from 'lucide-react';
+import { useProducts } from '@/hooks/queries';
 import { formatDate, formatPrice } from '@/lib/format';
-import { ORDER_STATUS_LABELS } from '@/lib/constants';
+import { useQuery } from '@tanstack/react-query';
+import { listCartTickets, listInventory } from '@/services/commerce';
 import { AdminTitle } from './AdminLayout';
 import { useAuth } from '@/context/AuthContext';
 
 export default function DashboardPage() {
   const { isAdmin } = useAuth();
   const { data: products = [] } = useProducts({ includeInactive: true });
-  const { data: orders = [] } = useOrders();
+  const { data: orders = [], isLoading: ticketsLoading, error: ticketsError } = useQuery({ queryKey: ['cart-tickets'], queryFn: listCartTickets, refetchInterval: 30000 });
+  const { data: inventory = [], isLoading: stockLoading, error: stockError } = useQuery({ queryKey: ['inventory'], queryFn: listInventory, refetchInterval: 30000 });
 
-  const pending = orders.filter((o) => o.status === 'pendiente');
+  const pending = orders.filter((o) => o.status === 'pending' && Date.parse(o.expires_at) > Date.now());
   const noImages = products.filter((p) => p.images.length === 0);
   const stats = [
     { label: 'Productos activos', value: products.filter((p) => p.is_active).length, icon: Shirt },
-    { label: 'Pedidos pendientes', value: pending.length, icon: Package },
-    { label: 'Sin fotos', value: noImages.length, icon: ImageOff },
-    { label: 'Pedidos totales', value: orders.length, icon: Layers },
+    { label: 'Tickets pendientes (recientes)', value: ticketsError ? '—' : ticketsLoading ? '…' : pending.length, icon: Package },
+    { label: 'Unidades disponibles', value: stockError ? '—' : stockLoading ? '…' : inventory.reduce((sum, row) => sum + row.available, 0), icon: Warehouse },
+    { label: 'Ventas confirmadas (últimos 200)', value: ticketsError ? '—' : ticketsLoading ? '…' : orders.filter((o) => o.status === 'confirmed').length, icon: Layers },
   ];
 
   return (
@@ -46,26 +48,27 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      <p className="mt-3 text-sm text-mute">Tickets y ventas calculados sobre los últimos 200 tickets. {stockError && 'No pudimos consultar el inventario.'}</p>
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl bg-surface p-5 ring-1 ring-line">
-          <h2 className="mb-4 text-2xl font-bold tracking-tight">Últimos pedidos</h2>
-          {orders.length === 0 ? <p className="text-sm text-mute">Aún no hay pedidos.</p> : (
+          <h2 className="mb-4 text-2xl font-bold tracking-tight">Tickets recientes</h2>
+          {ticketsError ? <p role="alert" className="text-card">No pudimos cargar los tickets. Vuelve a intentarlo desde Tickets de WhatsApp.</p> : ticketsLoading ? <p>Cargando tickets…</p> : orders.length === 0 ? <p className="text-sm text-mute">Aún no hay tickets.</p> : (
             <ul className="divide-y divide-line">
               {orders.slice(0, 6).map((o) => (
                 <li key={o.id} className="flex items-center justify-between gap-3 py-3 text-sm">
                   <div>
                     <p className="font-bold">{o.code} · {o.customer_name}</p>
-                    <p className="text-xs text-mute">{formatDate(o.created_at)} · {o.city}</p>
+                    <p className="text-xs text-mute">{formatDate(o.created_at)}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-extrabold">{formatPrice(o.subtotal)}</p>
-                    <p className="text-xs text-mute">{ORDER_STATUS_LABELS[o.status]}</p>
+                    <p className="font-extrabold">{formatPrice(o.total)}</p>
+                    <p className="text-xs text-mute">{o.status === 'confirmed' ? 'Venta confirmada' : o.status === 'cancelled' ? 'Cancelado' : Date.parse(o.expires_at) <= Date.now() ? 'Vencido' : 'Pendiente'}</p>
                   </div>
                 </li>
               ))}
             </ul>
           )}
-          <Link to="/admin/pedidos" className="mt-3 inline-block text-sm font-bold text-volt">Ver todos →</Link>
+          <Link to="/admin/consultas" className="mt-3 inline-block text-sm font-bold text-volt">Ver todos →</Link>
         </section>
 
         <section className="rounded-2xl bg-surface p-5 ring-1 ring-line">

@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Link, Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ExternalLink, LayoutDashboard, LogOut, Menu, Package, Settings, Shirt, Tags, Layers, X, Warehouse, TicketCheck, BadgePercent, Users } from 'lucide-react';
+import { ExternalLink, LayoutDashboard, LogOut, Menu, Settings, Shirt, Tags, Layers, X, Warehouse, TicketCheck, BadgePercent, Users } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Logo } from '@/components/brand/Logo';
 import { Spinner } from '@/components/ui/EmptyState';
@@ -14,7 +14,6 @@ const ADMIN_NAV = [
   { to: '/admin/categorias', label: 'Categorías', icon: Tags },
   { to: '/admin/inventario', label: 'Inventario', icon: Warehouse },
   { to: '/admin/promociones', label: 'Promociones', icon: BadgePercent },
-  { to: '/admin/pedidos', label: 'Pedidos', icon: Package },
   { to: '/admin/consultas', label: 'Tickets WhatsApp', icon: TicketCheck },
   { to: '/admin/equipo', label: 'Equipo y accesos', icon: Users },
   { to: '/admin/ajustes', label: 'Ajustes', icon: Settings },
@@ -22,7 +21,6 @@ const ADMIN_NAV = [
 const OPERATOR_NAV = [
   { to: '/admin', label: 'Resumen', icon: LayoutDashboard, end: true },
   { to: '/admin/inventario', label: 'Inventario', icon: Warehouse },
-  { to: '/admin/pedidos', label: 'Pedidos', icon: Package },
   { to: '/admin/consultas', label: 'Tickets WhatsApp', icon: TicketCheck },
 ];
 

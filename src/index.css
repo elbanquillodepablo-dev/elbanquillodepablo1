@@ -71,6 +71,7 @@
   .btn-primary { @apply btn bg-fg text-ink hover:bg-white; }
   .btn-volt { @apply btn bg-volt text-ink hover:bg-volt-2; }
   .btn-ghost { @apply btn bg-surface text-fg ring-1 ring-line hover:bg-surface-2 hover:ring-line-strong; }
+  .btn-secondary { @apply btn bg-surface-3 text-fg ring-1 ring-line-strong hover:bg-surface-2; }
   .btn-danger { @apply btn bg-card text-white hover:brightness-110; }
 
   .field { @apply grid gap-2 text-sm font-medium text-fg/90; }

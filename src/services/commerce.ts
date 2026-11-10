@@ -40,9 +40,13 @@ export async function listInventory(): Promise<InventoryRow[]> {
   }));
 }
 
-export async function saveInventory(productId: string, size: string, stock: number): Promise<void> {
-  if (!Number.isInteger(stock) || stock < 0 || stock > 10000) throw new Error('La cantidad debe ser un número entre 0 y 10.000.');
-  const { error } = await supabase.from('product_inventory').upsert({ product_id: productId, size, stock_on_hand: stock }, { onConflict: 'product_id,size' });
+/** One statement: PostgreSQL rolls back every row if any stock constraint fails. */
+export async function saveInventoryBatch(changes: { product_id: string; size: string; stock_on_hand: number }[]): Promise<void> {
+  if (!changes.length) return;
+  if (changes.some((row) => !Number.isInteger(row.stock_on_hand) || row.stock_on_hand < 0 || row.stock_on_hand > 10000)) {
+    throw new Error('Todas las cantidades deben ser números enteros entre 0 y 10.000.');
+  }
+  const { error } = await supabase.from('product_inventory').upsert(changes, { onConflict: 'product_id,size' });
   if (error) throw error;
 }
 

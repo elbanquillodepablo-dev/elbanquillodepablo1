@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { initialAuthLinkType } from '@/lib/supabase';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { StoreLayout } from '@/components/layout/StoreLayout';
 import { Spinner } from '@/components/ui/EmptyState';
 import HomePage from '@/pages/store/HomePage';
@@ -23,7 +23,6 @@ const ProductsPage = lazy(() => import('@/pages/admin/ProductsPage'));
 const ProductFormPage = lazy(() => import('@/pages/admin/ProductFormPage'));
 const KitBuilderPage = lazy(() => import('@/pages/admin/KitBuilderPage'));
 const CategoriesPage = lazy(() => import('@/pages/admin/CategoriesPage'));
-const OrdersPage = lazy(() => import('@/pages/admin/OrdersPage'));
 const SettingsPage = lazy(() => import('@/pages/admin/SettingsPage'));
 const InventoryPage = lazy(() => import('@/pages/admin/InventoryPage'));
 const PromotionsPage = lazy(() => import('@/pages/admin/PromotionsPage'));
@@ -60,7 +59,7 @@ const router = createBrowserRouter([
       { path: 'categorias', element: s(<AdminOnly><CategoriesPage /></AdminOnly>) },
       { path: 'inventario', element: s(<InventoryPage />) },
       { path: 'promociones', element: s(<AdminOnly><PromotionsPage /></AdminOnly>) },
-      { path: 'pedidos', element: s(<OrdersPage />) },
+      { path: 'pedidos', element: <Navigate to="/admin/consultas" replace /> },
       { path: 'consultas', element: s(<CartTicketsPage />) },
       { path: 'equipo', element: s(<AdminOnly><StaffPage /></AdminOnly>) },
       { path: 'ajustes', element: s(<AdminOnly><SettingsPage /></AdminOnly>) },
